@@ -21,11 +21,11 @@ fn main() -> ExitCode {
 
     let mut input = String::new();
     let cmd = args.get(1).map(String::as_str);
-    if matches!(cmd, Some("seal") | Some("verify")) {
-        if let Err(e) = io::stdin().read_to_string(&mut input) {
-            eprintln!("讀唔到 stdin：{e}");
-            return ExitCode::from(1);
-        }
+    if matches!(cmd, Some("seal") | Some("verify"))
+        && let Err(e) = io::stdin().read_to_string(&mut input)
+    {
+        eprintln!("讀唔到 stdin：{e}");
+        return ExitCode::from(1);
     }
 
     match cmd {
@@ -67,7 +67,11 @@ fn seal(prev: &str, payload: &str) -> String {
 
 /// 防止打錯字：prev 一係 GENESIS，一係一個真 digest。
 fn is_valid_prev(prev: &str) -> bool {
-    prev == GENESIS || (prev.len() == 64 && prev.bytes().all(|b| b.is_ascii_digit() || (b'a'..=b'f').contains(&b)))
+    prev == GENESIS
+        || (prev.len() == 64
+            && prev
+                .bytes()
+                .all(|b| b.is_ascii_digit() || (b'a'..=b'f').contains(&b)))
 }
 
 #[derive(Debug, PartialEq)]
@@ -85,17 +89,27 @@ fn verify(input: &str) -> Result<usize, Broken> {
     for (i, line) in input.lines().filter(|l| !l.is_empty()).enumerate() {
         let index = i + 1;
         let mut parts = line.splitn(3, '\t');
-        let (Some(digest), Some(prev), Some(payload)) = (parts.next(), parts.next(), parts.next()) else {
-            return Err(Broken { index, reason: "format_error" });
+        let (Some(digest), Some(prev), Some(payload)) = (parts.next(), parts.next(), parts.next())
+        else {
+            return Err(Broken {
+                index,
+                reason: "format_error",
+            });
         };
 
         // 記錄自己話嘅上一條，要同真正上一條一致：防止有人刪走或者調亂記錄
         if prev != expected_prev {
-            return Err(Broken { index, reason: "prev_mismatch" });
+            return Err(Broken {
+                index,
+                reason: "prev_mismatch",
+            });
         }
         // 用內容重新計一次，要同存咗嘅 digest 一樣：防止有人改內容
         if seal(prev, payload) != digest {
-            return Err(Broken { index, reason: "digest_mismatch" });
+            return Err(Broken {
+                index,
+                reason: "digest_mismatch",
+            });
         }
 
         expected_prev = digest.to_string();
@@ -123,7 +137,9 @@ mod tests {
     }
 
     fn tsv(rows: &[(String, String, String)]) -> String {
-        rows.iter().map(|(d, p, j)| format!("{d}\t{p}\t{j}\n")).collect()
+        rows.iter()
+            .map(|(d, p, j)| format!("{d}\t{p}\t{j}\n"))
+            .collect()
     }
 
     #[test]
@@ -140,7 +156,10 @@ mod tests {
 
     #[test]
     fn changing_payload_changes_digest() {
-        assert_ne!(seal(GENESIS, r#"{"result":"pass"}"#), seal(GENESIS, r#"{"result":"fail"}"#));
+        assert_ne!(
+            seal(GENESIS, r#"{"result":"pass"}"#),
+            seal(GENESIS, r#"{"result":"fail"}"#)
+        );
     }
 
     #[test]
@@ -164,14 +183,26 @@ mod tests {
     fn verify_catches_edited_content() {
         let mut rows = chain(&["a", "b", "c"]);
         rows[1].2 = "b-edited".to_string();
-        assert_eq!(verify(&tsv(&rows)), Err(Broken { index: 2, reason: "digest_mismatch" }));
+        assert_eq!(
+            verify(&tsv(&rows)),
+            Err(Broken {
+                index: 2,
+                reason: "digest_mismatch"
+            })
+        );
     }
 
     #[test]
     fn verify_catches_a_deleted_record() {
         let mut rows = chain(&["a", "b", "c"]);
         rows.remove(1);
-        assert_eq!(verify(&tsv(&rows)), Err(Broken { index: 2, reason: "prev_mismatch" }));
+        assert_eq!(
+            verify(&tsv(&rows)),
+            Err(Broken {
+                index: 2,
+                reason: "prev_mismatch"
+            })
+        );
     }
 
     #[test]
@@ -180,11 +211,23 @@ mod tests {
         let mut rows = chain(&["a", "b", "c"]);
         rows[0].2 = "a-edited".to_string();
         rows[0].0 = seal(GENESIS, "a-edited");
-        assert_eq!(verify(&tsv(&rows)), Err(Broken { index: 2, reason: "prev_mismatch" }));
+        assert_eq!(
+            verify(&tsv(&rows)),
+            Err(Broken {
+                index: 2,
+                reason: "prev_mismatch"
+            })
+        );
     }
 
     #[test]
     fn verify_reports_bad_format() {
-        assert_eq!(verify("only-one-field\n"), Err(Broken { index: 1, reason: "format_error" }));
+        assert_eq!(
+            verify("only-one-field\n"),
+            Err(Broken {
+                index: 1,
+                reason: "format_error"
+            })
+        );
     }
 }
