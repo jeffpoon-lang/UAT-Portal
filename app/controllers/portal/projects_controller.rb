@@ -1,15 +1,9 @@
-# 客戶只睇到自己公司嘅 project
-class Portal::ProjectsController < ApplicationController
+class Portal::ProjectsController < Portal::BaseController
   def index
-    @projects = scope.order(updated_at: :desc)
+    @projects = project_scope.order(updated_at: :desc)
   end
 
   def show
-    @project = scope.find(params[:id])
+    @project = project_scope.find(params[:id])
   end
-
-  private
-    def scope
-      Current.user.role_admin? ? Project.all : Project.where(client_id: Current.user.client_id)
-    end
 end

@@ -1,0 +1,9 @@
+/.git/
+/log/*
+/tmp/*
+/storage/*
+/node_modules/
+/seal/target/
+/bin/uat-seal
+/config/master.key
+/.env*

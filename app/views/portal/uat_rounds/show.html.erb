@@ -1,0 +1,18 @@
+<% content_for :title, "UAT Round #{@round.number} · #{@project.name}" %>
+<p class="text-sm text-slate-500 mb-1"><%= link_to @project.name, portal_project_path(@project), class: "hover:underline" %></p>
+<div class="flex flex-wrap items-baseline justify-between gap-2 mb-6">
+  <h1 class="text-2xl font-semibold">UAT Round <%= @round.number %><span class="text-base font-normal text-slate-500">／<%= @project.allowed_uat_rounds %></span></h1>
+  <div id="round-counts"><%= render "shared/round_counts", round: @round %></div>
+</div>
+
+<% if @round.status_open? %>
+  <p class="mb-4 text-sm text-slate-600">逐條試，揀 Pass、Fail 或者測唔到，有問題寫低同上載截圖，每條撳「儲存」。</p>
+<% end %>
+
+<div class="space-y-3 mb-8">
+  <% @round.test_results.each do |result| %>
+    <%= render "portal/test_results/result", result: result %>
+  <% end %>
+</div>
+
+<%= render "portal/uat_rounds/submit", round: @round, project: @project %>

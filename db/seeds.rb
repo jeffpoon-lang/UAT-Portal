@@ -1,4 +1,18 @@
-# Demo data，只作開發用。登入資料可以用環境變數改：
+# Production：唔落 demo data。有齊 ADMIN_EMAIL 同 ADMIN_PASSWORD 先建 admin，冇就乜都唔做。
+if Rails.env.production?
+  if ENV["ADMIN_EMAIL"].present? && ENV["ADMIN_PASSWORD"].present?
+    User.find_or_create_by!(email_address: ENV["ADMIN_EMAIL"]) do |u|
+      u.password = ENV["ADMIN_PASSWORD"]
+      u.role = :admin
+    end
+    puts "Production admin ready"
+  else
+    puts "Production：未設 ADMIN_EMAIL／ADMIN_PASSWORD，冇建任何帳號"
+  end
+  return
+end
+
+# 以下 demo data 只作開發用。登入資料可以用環境變數改：
 #   ADMIN_EMAIL / ADMIN_PASSWORD / CLIENT_PASSWORD
 admin_email = ENV.fetch("ADMIN_EMAIL", "admin@example.com")
 admin_pw    = ENV.fetch("ADMIN_PASSWORD", "demo-admin-2026")
@@ -40,4 +54,7 @@ end
 
 yoga.projects.find_or_create_by!(name: "Booking system") { |p| p.phase = :development }
 
-puts "Seeded: #{User.count} users, #{Client.count} clients, #{Project.count} projects, #{TestCase.count} test cases"
+# 開好 Round 1，客戶一登入就可以試 UAT 流程
+course.open_next_round! if course.uat_rounds.empty?
+
+puts "Seeded: #{User.count} users, #{Client.count} clients, #{Project.count} projects, #{TestCase.count} test cases, #{UatRound.count} UAT rounds"

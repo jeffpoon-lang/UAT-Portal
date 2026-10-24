@@ -13,6 +13,61 @@
 
 <div class="mb-8"><%= render "shared/phase_progress", project: @project %></div>
 
+<section class="mb-10" aria-labelledby="uat-heading">
+  <div class="flex flex-wrap items-center justify-between gap-3 mb-3">
+    <h2 id="uat-heading" class="text-lg font-semibold">UAT（已用 <%= @project.uat_rounds.size %>／<%= @project.allowed_uat_rounds %> round）</h2>
+    <% if (reason = @project.cannot_open_round_reason) %>
+      <span class="text-sm text-slate-500"><%= reason %></span>
+    <% else %>
+      <%= button_to "開 Round #{@project.uat_rounds.size + 1}", admin_project_uat_rounds_path(@project), class: "rounded-lg bg-indigo-600 px-4 py-2 text-sm text-white hover:bg-indigo-700 cursor-pointer" %>
+    <% end %>
+  </div>
+  <% if @project.uat_rounds.empty? %>
+    <p class="text-sm text-slate-500">未開過 round。加齊 test case 之後開 Round 1，客戶就可以喺 portal 開始測試。</p>
+  <% else %>
+    <ul class="space-y-2">
+      <% @project.uat_rounds.each do |r| %>
+        <li class="rounded-lg bg-white border border-slate-200 px-4 py-3 flex flex-wrap items-center justify-between gap-2">
+          <%= link_to "Round #{r.number}", admin_project_uat_round_path(@project, r), class: "font-medium text-indigo-700 hover:underline" %>
+          <%= render "shared/round_counts", round: r %>
+          <span class="text-xs text-slate-500">
+            <%= { "open" => "客戶測試中", "changes_requested" => "要修正", "signed_off" => "已簽署" }[r.status] %>
+            <% if r.sign_off %> · <%= link_to r.sign_off.doc_number, admin_sign_off_path(r.sign_off), class: "text-indigo-700 underline" %><% end %>
+          </span>
+        </li>
+      <% end %>
+    </ul>
+  <% end %>
+
+  <div class="flex items-center justify-between mt-6 mb-2">
+    <h3 class="font-semibold">Change requests</h3>
+    <%= link_to "開 CR", new_admin_project_change_request_path(@project), class: "rounded-lg border border-slate-300 px-3 py-1.5 text-sm hover:bg-white" %>
+  </div>
+  <% if @project.change_requests.empty? %>
+    <p class="text-sm text-slate-500">冇 CR。</p>
+  <% else %>
+    <ul class="space-y-2">
+      <% @project.change_requests.each do |cr| %>
+        <li class="rounded-lg bg-white border border-slate-200 px-4 py-3">
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <span class="font-mono text-sm"><%= cr.doc_number %></span>
+            <span class="text-xs text-slate-600">+<%= cr.extra_rounds %> round<% if cr.quote_hkd %> · HK$<%= number_with_delimiter(cr.quote_hkd) %><% end %></span>
+            <% if cr.status_pending? %>
+              <span class="flex gap-2">
+                <%= button_to "批核", approve_admin_project_change_request_path(@project, cr), class: "rounded-md bg-emerald-600 px-3 py-1 text-xs text-white cursor-pointer" %>
+                <%= button_to "拒絕", reject_admin_project_change_request_path(@project, cr), class: "rounded-md border border-slate-300 px-3 py-1 text-xs cursor-pointer" %>
+              </span>
+            <% else %>
+              <span class="text-xs <%= cr.status_approved? ? "text-emerald-700" : "text-slate-500" %>"><%= cr.status_approved? ? "已批核" : "已拒絕" %></span>
+            <% end %>
+          </div>
+          <p class="text-sm text-slate-600 mt-1"><%= cr.description %></p>
+        </li>
+      <% end %>
+    </ul>
+  <% end %>
+</section>
+
 <div class="flex items-center justify-between mb-3">
   <h2 class="text-lg font-semibold">Test cases（<%= @project.test_cases.size %>）</h2>
   <%= link_to "加 test case", new_admin_project_test_case_path(@project), class: "rounded-lg bg-indigo-600 px-4 py-2 text-sm text-white hover:bg-indigo-700" %>

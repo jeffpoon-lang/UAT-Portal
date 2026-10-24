@@ -1,0 +1,29 @@
+<% content_for :title, "Round #{@round.number} · #{@project.name}" %>
+<p class="text-sm text-slate-500 mb-1"><%= link_to @project.name, admin_project_path(@project), class: "hover:underline" %> · <%= @project.client.name %></p>
+<div class="flex flex-wrap items-baseline justify-between gap-2 mb-6">
+  <h1 class="text-2xl font-semibold">UAT Round <%= @round.number %><span class="text-base font-normal text-slate-500">／<%= @project.allowed_uat_rounds %></span></h1>
+  <%= render "shared/round_counts", round: @round %>
+</div>
+<p class="text-sm text-slate-600 mb-4">
+  狀態：<strong><%= { "open" => "客戶測試中", "changes_requested" => "客戶要求修正", "signed_off" => "已簽署" }[@round.status] %></strong>
+  · 開咗 <%= @round.opened_at.in_time_zone("Europe/London").strftime("%Y-%m-%d %H:%M") %>
+  <% if @round.sign_off %> · <%= link_to @round.sign_off.doc_number, admin_sign_off_path(@round.sign_off), class: "text-indigo-700 underline" %><% end %>
+</p>
+<div class="space-y-3">
+  <% @round.test_results.each do |r| %>
+    <div class="rounded-xl bg-white border border-slate-200 p-4">
+      <div class="flex items-start justify-between gap-3">
+        <div><span class="font-mono text-sm text-slate-500 mr-2"><%= r.test_case.code %></span><%= r.test_case.title %></div>
+        <%= render "shared/result_badge", result: r %>
+      </div>
+      <% if r.comment.present? %><p class="mt-2 text-sm bg-slate-50 rounded-lg px-3 py-2"><%= r.comment %></p><% end %>
+      <% if r.screenshots.attached? %>
+        <div class="flex flex-wrap gap-2 mt-3">
+          <% r.screenshots.each do |shot| %>
+            <%= link_to image_tag(url_for(shot), class: "h-24 w-auto rounded-md border border-slate-200", alt: "#{r.test_case.code} 截圖"), url_for(shot), target: "_blank" %>
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+  <% end %>
+</div>

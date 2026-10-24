@@ -78,8 +78,7 @@ test:
 # Read https://guides.rubyonrails.org/configuring.html#configuring-a-database
 # for a full overview on how database connection configuration can be specified.
 #
+# Production 用 DATABASE_URL（Render／Fly 會自動提供）
 production:
   <<: *default
-  database: uat_portal_production
-  username: uat_portal
-  password: <%= ENV["UAT_PORTAL_DATABASE_PASSWORD"] %>
+  url: <%= ENV["DATABASE_URL"] %>

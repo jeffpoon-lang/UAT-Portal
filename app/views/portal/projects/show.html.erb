@@ -2,6 +2,29 @@
 <h1 class="text-2xl font-semibold mb-1"><%= @project.name %></h1>
 <p class="text-sm text-slate-500 mb-6">而家階段：<strong><%= @project.phase_label %></strong></p>
 <div class="mb-8"><%= render "shared/phase_progress", project: @project %></div>
+
+<% if (round = @project.open_round) %>
+  <%= link_to portal_project_uat_round_path(@project, round), class: "block rounded-xl bg-indigo-600 text-white p-5 mb-8 hover:bg-indigo-700" do %>
+    <div class="text-sm opacity-80">輪到你測試</div>
+    <div class="text-lg font-semibold">開始 UAT Round <%= round.number %> →</div>
+  <% end %>
+<% end %>
+
+<% if @project.uat_rounds.any? %>
+  <h2 class="text-lg font-semibold mb-3">UAT 記錄</h2>
+  <ul class="space-y-2 mb-8">
+    <% @project.uat_rounds.each do |r| %>
+      <li class="rounded-lg bg-white border border-slate-200 px-4 py-3 flex flex-wrap items-center justify-between gap-2">
+        <%= link_to "Round #{r.number}", portal_project_uat_round_path(@project, r), class: "font-medium text-indigo-700 hover:underline" %>
+        <%= render "shared/round_counts", round: r %>
+        <span class="text-xs text-slate-500">
+          <%= { "open" => "測試中", "changes_requested" => "等 IT 修正", "signed_off" => "已簽署" }[r.status] %>
+        </span>
+      </li>
+    <% end %>
+  </ul>
+<% end %>
+
 <h2 class="text-lg font-semibold mb-3">Test cases</h2>
 <ul class="space-y-2">
   <% @project.test_cases.each do |tc| %>

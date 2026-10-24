@@ -1,0 +1,33 @@
+<div id="round-submit">
+  <% if round.status_open? %>
+    <section class="rounded-xl bg-white border border-slate-200 p-5" aria-labelledby="submit-heading">
+      <h2 id="submit-heading" class="font-semibold mb-2">提交結果</h2>
+      <% if !round.all_answered? %>
+        <p class="text-sm text-slate-600">仲有 <%= round.counts["pending"] %> 條未剔，全部剔完先可以提交。</p>
+      <% elsif round.all_passed? %>
+        <% if Current.user.role_client? %>
+          <%= form_with url: sign_off_portal_project_uat_round_path(project, round), method: :post, class: "space-y-3", data: { turbo: false } do %>
+            <p class="text-sm text-slate-600">全部 pass，可以簽署驗收。</p>
+            <label class="block text-sm">簽署人全名
+              <input type="text" name="signer_name" required autocomplete="name" class="mt-1 w-full max-w-sm rounded-lg border-slate-300">
+            </label>
+            <label class="flex items-start gap-2 text-sm">
+              <input type="checkbox" name="confirm" value="1" required class="mt-0.5 rounded border-slate-300">
+              <span>我確認已完成以上所有測試，結果全部符合預期，同意驗收（UAT sign-off）。</span>
+            </label>
+            <button class="rounded-lg bg-emerald-600 px-5 py-2 text-sm text-white hover:bg-emerald-700 cursor-pointer">簽署 sign-off</button>
+          <% end %>
+        <% else %>
+          <p class="text-sm text-slate-600">全部 pass，等客戶簽署。</p>
+        <% end %>
+      <% else %>
+        <p class="text-sm text-slate-600 mb-3">有 <%= round.failing_results.size %> 條唔 pass，提交之後 IT 會修正再開下一個 round。</p>
+        <%= button_to "提交，等 IT 修正", request_changes_portal_project_uat_round_path(project, round), data: { turbo: false }, class: "rounded-lg bg-indigo-600 px-5 py-2 text-sm text-white hover:bg-indigo-700 cursor-pointer" %>
+      <% end %>
+    </section>
+  <% elsif round.status_signed_off? %>
+    <p class="text-sm">已簽署：<%= link_to round.sign_off.doc_number, portal_sign_off_path(round.sign_off), class: "text-indigo-700 underline" %></p>
+  <% else %>
+    <p class="text-sm text-slate-600">呢個 round 已提交，等 IT 修正。</p>
+  <% end %>
+</div>

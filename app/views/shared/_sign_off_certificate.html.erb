@@ -1,0 +1,29 @@
+<% p = sign_off.payload %>
+<article class="rounded-xl bg-white border border-slate-200 p-6 print:border-0">
+  <header class="flex flex-wrap items-baseline justify-between gap-2 border-b border-slate-200 pb-4 mb-4">
+    <div>
+      <p class="text-xs uppercase tracking-wide text-slate-500">UAT Sign-off</p>
+      <h1 class="text-2xl font-semibold"><%= sign_off.doc_number %></h1>
+    </div>
+    <p class="text-sm text-slate-600"><%= sign_off.signed_at.in_time_zone("Europe/London").strftime("%Y-%m-%d %H:%M %Z") %></p>
+  </header>
+  <dl class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-2 text-sm mb-6">
+    <div><dt class="text-slate-500">客戶</dt><dd><%= p.dig("client", "name") %></dd></div>
+    <div><dt class="text-slate-500">Project</dt><dd><%= p.dig("project", "name") %></dd></div>
+    <div><dt class="text-slate-500">簽署人</dt><dd><%= p.dig("signer", "name") %>（<%= p.dig("signer", "email") %>）</dd></div>
+    <div><dt class="text-slate-500">UAT round</dt><dd><%= p["round"] %></dd></div>
+  </dl>
+  <table class="w-full text-sm mb-6">
+    <thead class="text-left text-slate-500"><tr><th class="py-1 pr-3">編號</th><th class="py-1 pr-3">Test case</th><th class="py-1">結果</th></tr></thead>
+    <tbody>
+      <% p["results"].each do |r| %>
+        <tr class="border-t border-slate-100"><td class="py-1 pr-3 font-mono whitespace-nowrap"><%= r["code"] %></td><td class="py-1 pr-3"><%= r["title"] %></td><td class="py-1 uppercase"><%= r["status"] %></td></tr>
+      <% end %>
+    </tbody>
+  </table>
+  <div class="rounded-lg bg-slate-50 p-3 text-xs text-slate-600 break-all">
+    <p class="mb-1"><span class="font-medium">Digest：</span><span class="font-mono"><%= sign_off.digest %></span></p>
+    <p><span class="font-medium">上一條：</span><span class="font-mono"><%= sign_off.prev_digest %></span></p>
+    <p class="mt-2">以上內容喺簽署當刻用 SHA-256 鎖定，並同之前所有 sign-off 串成一條 chain；之後任何修改都會被驗證工具發現。</p>
+  </div>
+</article>

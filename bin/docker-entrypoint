@@ -1,0 +1,6 @@
+#!/bin/bash -e
+# 開 server 之前自動跑 migration
+if [ "${@: -4:1}" == "./bin/rails" ] && [ "${@: -3:1}" == "server" ]; then
+  ./bin/rails db:prepare
+fi
+exec "${@}"

@@ -1,0 +1,7 @@
+<% c = round.counts %>
+<span class="text-xs text-slate-600">
+  <span class="text-emerald-700"><%= c["pass"] %> pass</span> ·
+  <span class="text-red-700"><%= c["fail"] %> fail</span> ·
+  <span class="text-amber-700"><%= c["blocked"] %> 測唔到</span> ·
+  <%= c["pending"] %> 未測
+</span>

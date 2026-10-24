@@ -1,0 +1,28 @@
+<% content_for :title, "Sign-offs" %>
+<div class="flex flex-wrap items-center justify-between gap-3 mb-6">
+  <div>
+    <h1 class="text-2xl font-semibold">Sign-off 記錄</h1>
+    <p class="text-sm text-slate-500">所有 sign-off 串成一條 hash chain，撳驗證會用 Rust 由頭驗到尾。</p>
+  </div>
+  <%= button_to "驗證成條 chain", verify_admin_sign_offs_path, class: "rounded-lg bg-indigo-600 px-4 py-2 text-sm text-white hover:bg-indigo-700 cursor-pointer" %>
+</div>
+<% if @sign_offs.empty? %>
+  <p class="text-slate-500">未有 sign-off。</p>
+<% else %>
+  <div class="overflow-x-auto">
+    <table class="w-full bg-white rounded-xl border border-slate-200 text-sm">
+      <thead class="text-left text-slate-500"><tr><th class="px-4 py-2">編號</th><th class="px-4 py-2">Project</th><th class="px-4 py-2">簽署人</th><th class="px-4 py-2">時間</th><th class="px-4 py-2">Digest</th></tr></thead>
+      <tbody>
+        <% @sign_offs.each do |s| %>
+          <tr class="border-t border-slate-100">
+            <td class="px-4 py-2 font-mono"><%= link_to s.doc_number, admin_sign_off_path(s), class: "text-indigo-700 hover:underline" %></td>
+            <td class="px-4 py-2"><%= s.project.name %><span class="text-slate-500"> · <%= s.project.client.name %></span></td>
+            <td class="px-4 py-2"><%= s.signer_name %></td>
+            <td class="px-4 py-2 whitespace-nowrap"><%= s.signed_at.in_time_zone("Europe/London").strftime("%Y-%m-%d %H:%M") %></td>
+            <td class="px-4 py-2 font-mono text-xs text-slate-600"><%= s.short_digest %>…</td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+<% end %>

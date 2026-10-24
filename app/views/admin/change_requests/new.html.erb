@@ -1,0 +1,12 @@
+<h1 class="text-2xl font-semibold mb-1">新 Change Request</h1>
+<p class="text-sm text-slate-500 mb-6"><%= @project.name %> · 已用 <%= @project.uat_rounds.size %>／<%= @project.allowed_uat_rounds %> 個 UAT round</p>
+<%= form_with model: [ :admin, @project, @change_request ], class: "space-y-4 max-w-lg bg-white rounded-xl border border-slate-200 p-6" do |f| %>
+  <%= render "shared/errors", record: @change_request %>
+  <div><%= f.label :description, "改咩／點解要加", class: "block text-sm mb-1" %><%= f.text_area :description, rows: 4, class: "w-full rounded-lg border-slate-300" %></div>
+  <div class="flex gap-4">
+    <div><%= f.label :extra_rounds, "加幾多個 UAT round", class: "block text-sm mb-1" %><%= f.number_field :extra_rounds, min: 0, class: "w-28 rounded-lg border-slate-300" %></div>
+    <div><%= f.label :quote_hkd, "補充報價（HK$）", class: "block text-sm mb-1" %><%= f.number_field :quote_hkd, min: 0, class: "w-36 rounded-lg border-slate-300" %></div>
+  </div>
+  <p class="text-xs text-slate-500">SOP：客簽咗 CR 表先做；簽咗之後喺 project 頁撳「批核」，額外 round 先會生效。</p>
+  <%= f.submit "建立 CR", class: "rounded-lg bg-indigo-600 px-4 py-2 text-sm text-white hover:bg-indigo-700 cursor-pointer" %>
+<% end %>
