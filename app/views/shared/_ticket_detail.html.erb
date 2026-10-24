@@ -1,0 +1,33 @@
+<div class="rounded-xl bg-white border border-slate-200 p-5 mb-6">
+  <div class="flex flex-wrap items-start justify-between gap-2 mb-1">
+    <h1 class="text-xl font-semibold"><span class="font-mono text-base text-slate-500 mr-2"><%= ticket.doc_number %></span><%= ticket.title %></h1>
+    <div class="flex gap-1"><%= render "shared/ticket_badges", ticket: ticket %></div>
+  </div>
+  <p class="text-xs text-slate-500 mb-4">
+    <%= ticket.project.name %> · <%= ticket.opened_by.email_address %> 開於 <%= ticket.created_at.in_time_zone("Europe/London").strftime("%Y-%m-%d %H:%M") %>
+    · 優先度：<%= ticket.priority_label %>
+  </p>
+  <p class="whitespace-pre-line text-sm"><%= ticket.body %></p>
+  <% if ticket.screenshots.attached? %>
+    <div class="flex flex-wrap gap-2 mt-4">
+      <% ticket.screenshots.each do |shot| %>
+        <%= link_to image_tag(url_for(shot), class: "h-24 w-auto rounded-md border border-slate-200", alt: "#{ticket.doc_number} 截圖"), url_for(shot), target: "_blank" %>
+      <% end %>
+    </div>
+  <% end %>
+</div>
+
+<h2 class="text-lg font-semibold mb-3">處理記錄<% if ticket.logs.any? %><span class="text-sm font-normal text-slate-500">（共 <%= ticket.total_minutes %> 分鐘）</span><% end %></h2>
+<% persisted_logs = ticket.logs.select(&:persisted?) %>
+<% if persisted_logs.empty? %>
+  <p class="text-sm text-slate-500 mb-6">未有記錄。</p>
+<% else %>
+  <ol class="space-y-2 mb-6">
+    <% persisted_logs.each do |log| %>
+      <li class="rounded-lg bg-white border border-slate-200 px-4 py-3">
+        <div class="text-xs text-slate-500 mb-1"><%= log.logged_on.strftime("%Y-%m-%d") %> · <%= log.minutes %> 分鐘</div>
+        <p class="text-sm whitespace-pre-line"><%= log.note %></p>
+      </li>
+    <% end %>
+  </ol>
+<% end %>

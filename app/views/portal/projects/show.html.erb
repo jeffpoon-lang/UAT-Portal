@@ -10,6 +10,31 @@
   <% end %>
 <% end %>
 
+<% if @project.accepts_tickets? || @project.tickets.any? %>
+  <section class="mb-8" aria-labelledby="tickets-heading">
+    <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+      <h2 id="tickets-heading" class="text-lg font-semibold">Maintenance</h2>
+      <% if @project.accepts_tickets? %>
+        <%= link_to "報問題／要求改動", new_portal_project_ticket_path(@project), class: "rounded-lg bg-indigo-600 px-4 py-2 text-sm text-white hover:bg-indigo-700" %>
+      <% end %>
+    </div>
+    <% if @project.tickets.empty? %>
+      <p class="text-sm text-slate-500">未有 ticket。</p>
+    <% else %>
+      <ul class="space-y-2">
+        <% @project.tickets.each do |t| %>
+          <li>
+            <%= link_to portal_project_ticket_path(@project, t), class: "flex flex-wrap items-center justify-between gap-2 rounded-lg bg-white border border-slate-200 px-4 py-3 hover:border-indigo-300" do %>
+              <span><span class="font-mono text-sm text-slate-500 mr-2"><%= t.doc_number %></span><%= t.title %></span>
+              <span class="flex gap-1"><%= render "shared/ticket_badges", ticket: t %></span>
+            <% end %>
+          </li>
+        <% end %>
+      </ul>
+    <% end %>
+  </section>
+<% end %>
+
 <% if @project.uat_rounds.any? %>
   <h2 class="text-lg font-semibold mb-3">UAT 記錄</h2>
   <ul class="space-y-2 mb-8">
@@ -25,6 +50,7 @@
   </ul>
 <% end %>
 
+<% if @project.test_cases.any? %>
 <h2 class="text-lg font-semibold mb-3">Test cases</h2>
 <ul class="space-y-2">
   <% @project.test_cases.each do |tc| %>
@@ -34,3 +60,4 @@
     </li>
   <% end %>
 </ul>
+<% end %>

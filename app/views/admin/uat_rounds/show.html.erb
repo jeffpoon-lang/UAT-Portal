@@ -9,6 +9,36 @@
   · 開咗 <%= @round.opened_at.in_time_zone("Europe/London").strftime("%Y-%m-%d %H:%M") %>
   <% if @round.sign_off %> · <%= link_to @round.sign_off.doc_number, admin_sign_off_path(@round.sign_off), class: "text-indigo-700 underline" %><% end %>
 </p>
+<% if @round.all_answered? && !@round.all_passed? %>
+  <section class="rounded-xl bg-white border border-slate-200 p-5 mb-6" aria-labelledby="ai-heading">
+    <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+      <h2 id="ai-heading" class="font-semibold">AI 摘要</h2>
+      <%= button_to (@round.ai_summary ? "重新摘要" : "用 AI 摘要同分類"), summarise_admin_project_uat_round_path(@project, @round),
+                    class: "rounded-lg border border-slate-300 px-3 py-1.5 text-sm hover:bg-slate-50 cursor-pointer" %>
+    </div>
+    <% if (summary = @round.ai_summary) %>
+      <p class="text-sm mb-3"><%= summary["overall"] %></p>
+      <% cat_colors = { "bug" => "bg-red-100 text-red-800", "change_request" => "bg-violet-100 text-violet-800", "unclear" => "bg-slate-100 text-slate-700" } %>
+      <ul class="space-y-2">
+        <% summary["items"].each do |item| %>
+          <li class="text-sm">
+            <span class="font-mono text-slate-500 mr-1"><%= item["code"] %></span>
+            <span class="inline-block rounded-full px-2 py-0.5 text-xs font-medium <%= cat_colors.fetch(item["category"], cat_colors["unclear"]) %>"><%= AiSummaryService::CATEGORY_LABELS.fetch(item["category"], item["category"]) %></span>
+            <%= item["summary"] %>
+            <span class="block text-xs text-slate-500 mt-0.5"><%= item["reason"] %></span>
+          </li>
+        <% end %>
+      </ul>
+      <% if summary["items"].any? { |i| i["category"] == "change_request" } %>
+        <p class="text-sm mt-4 rounded-lg bg-violet-50 px-3 py-2">有啲似係改需求，可能要 <%= link_to "開 CR", new_admin_project_change_request_path(@project), class: "text-indigo-700 underline" %>。</p>
+      <% end %>
+      <p class="text-xs text-slate-400 mt-3">AI 分類只供參考，<%= @round.ai_summarised_at.in_time_zone("Europe/London").strftime("%Y-%m-%d %H:%M") %> 產生</p>
+    <% else %>
+      <p class="text-sm text-slate-500">將唔 pass 嘅 comment 交畀 AI，分出邊啲係 bug、邊啲似改需求。</p>
+    <% end %>
+  </section>
+<% end %>
+
 <div class="space-y-3">
   <% @round.test_results.each do |r| %>
     <div class="rounded-xl bg-white border border-slate-200 p-4">

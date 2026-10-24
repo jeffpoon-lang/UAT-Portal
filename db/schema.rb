@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_24_165034) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_24_185100) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -128,6 +128,36 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_24_165034) do
     t.index ["uat_round_id"], name: "index_test_results_on_uat_round_id"
   end
 
+  create_table "ticket_logs", force: :cascade do |t|
+    t.bigint "ticket_id", null: false
+    t.bigint "user_id", null: false
+    t.date "logged_on", null: false
+    t.integer "minutes", default: 0, null: false
+    t.text "note", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["logged_on"], name: "index_ticket_logs_on_logged_on"
+    t.index ["ticket_id"], name: "index_ticket_logs_on_ticket_id"
+    t.index ["user_id"], name: "index_ticket_logs_on_user_id"
+  end
+
+  create_table "tickets", force: :cascade do |t|
+    t.bigint "project_id", null: false
+    t.bigint "opened_by_id", null: false
+    t.string "doc_number", null: false
+    t.string "title", null: false
+    t.text "body", null: false
+    t.integer "priority", default: 1, null: false
+    t.integer "status", default: 0, null: false
+    t.datetime "resolved_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["doc_number"], name: "index_tickets_on_doc_number", unique: true
+    t.index ["opened_by_id"], name: "index_tickets_on_opened_by_id"
+    t.index ["project_id"], name: "index_tickets_on_project_id"
+    t.index ["status"], name: "index_tickets_on_status"
+  end
+
   create_table "uat_rounds", force: :cascade do |t|
     t.bigint "project_id", null: false
     t.integer "number", null: false
@@ -136,6 +166,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_24_165034) do
     t.datetime "closed_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.jsonb "ai_summary"
+    t.datetime "ai_summarised_at"
     t.index ["project_id", "number"], name: "index_uat_rounds_on_project_id_and_number", unique: true
     t.index ["project_id"], name: "index_uat_rounds_on_project_id"
   end
@@ -162,6 +194,10 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_24_165034) do
   add_foreign_key "test_cases", "projects"
   add_foreign_key "test_results", "test_cases"
   add_foreign_key "test_results", "uat_rounds"
+  add_foreign_key "ticket_logs", "tickets"
+  add_foreign_key "ticket_logs", "users"
+  add_foreign_key "tickets", "projects"
+  add_foreign_key "tickets", "users", column: "opened_by_id"
   add_foreign_key "uat_rounds", "projects"
   add_foreign_key "users", "clients"
 end

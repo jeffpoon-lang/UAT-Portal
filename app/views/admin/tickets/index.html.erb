@@ -1,0 +1,27 @@
+<% content_for :title, "Tickets" %>
+<div class="flex flex-wrap items-center justify-between gap-3 mb-6">
+  <h1 class="text-2xl font-semibold">Maintenance tickets</h1>
+  <%= link_to "月尾報告", admin_maintenance_report_path, class: "rounded-lg border border-slate-300 px-4 py-2 text-sm hover:bg-white" %>
+</div>
+<nav class="flex gap-2 mb-4 text-sm" aria-label="篩選">
+  <% Admin::TicketsController::FILTERS.each do |key, label| %>
+    <%= link_to label, admin_tickets_path(filter: key), class: "rounded-full px-3 py-1 #{@filter == key ? "bg-slate-800 text-white" : "bg-white border border-slate-200 text-slate-600"}", "aria-current": (@filter == key ? "page" : nil) %>
+  <% end %>
+</nav>
+<% if @tickets.empty? %>
+  <p class="text-slate-500">冇 ticket。</p>
+<% else %>
+  <ul class="space-y-2">
+    <% @tickets.each do |t| %>
+      <li>
+        <%= link_to admin_ticket_path(t), class: "block rounded-lg bg-white border border-slate-200 px-4 py-3 hover:border-indigo-300" do %>
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <span><span class="font-mono text-sm text-slate-500 mr-2"><%= t.doc_number %></span><%= t.title %></span>
+            <span class="flex gap-1"><%= render "shared/ticket_badges", ticket: t %></span>
+          </div>
+          <div class="text-xs text-slate-500 mt-1"><%= t.project.client.name %> · <%= t.project.name %> · <%= time_ago_in_words(t.created_at) %>前</div>
+        <% end %>
+      </li>
+    <% end %>
+  </ul>
+<% end %>

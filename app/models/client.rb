@@ -1,6 +1,7 @@
 class Client < ApplicationRecord
   has_many :projects, dependent: :destroy
   has_many :users, dependent: :nullify
+  has_many :tickets, through: :projects
 
   normalizes :code, with: ->(c) { c.strip.upcase }
 

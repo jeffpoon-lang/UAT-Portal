@@ -1,0 +1,21 @@
+<% content_for :title, "開 ticket" %>
+<p class="text-sm text-slate-500 mb-1"><%= link_to @project.name, portal_project_path(@project), class: "hover:underline" %></p>
+<h1 class="text-2xl font-semibold mb-6">報問題／要求改動</h1>
+<%= form_with model: @ticket, url: portal_project_tickets_path(@project), class: "space-y-4 max-w-xl bg-white rounded-xl border border-slate-200 p-6" do |f| %>
+  <%= render "shared/errors", record: @ticket %>
+  <div><%= f.label :title, "一句講咩問題", class: "block text-sm mb-1" %><%= f.text_field :title, class: "w-full rounded-lg border-slate-300", placeholder: "例如：報名表撳提交冇反應" %></div>
+  <div><%= f.label :body, "詳細情況", class: "block text-sm mb-1" %><%= f.text_area :body, rows: 5, class: "w-full rounded-lg border-slate-300", placeholder: "喺邊一頁、做咗咩、見到咩、幾時開始" %></div>
+  <fieldset>
+    <legend class="text-sm mb-1">有幾急</legend>
+    <div class="flex flex-wrap gap-2">
+      <% [ [ "low", "唔急" ], [ "normal", "一般" ], [ "urgent", "緊急（影響生意）" ] ].each do |value, label| %>
+        <label class="cursor-pointer">
+          <%= f.radio_button :priority, value, class: "peer sr-only" %>
+          <span class="block rounded-lg border border-slate-300 px-4 py-2 text-sm peer-checked:bg-indigo-600 peer-checked:text-white peer-checked:border-transparent peer-focus-visible:ring-2 peer-focus-visible:ring-indigo-500"><%= label %></span>
+        </label>
+      <% end %>
+    </div>
+  </fieldset>
+  <div><%= f.label :screenshots, "截圖（可以揀多張）", class: "block text-sm mb-1" %><%= f.file_field :screenshots, multiple: true, accept: "image/*", class: "text-sm file:mr-2 file:rounded-lg file:border-0 file:bg-slate-100 file:px-3 file:py-2" %></div>
+  <%= f.submit "提交", class: "rounded-lg bg-indigo-600 px-5 py-2 text-sm text-white hover:bg-indigo-700 cursor-pointer" %>
+<% end %>

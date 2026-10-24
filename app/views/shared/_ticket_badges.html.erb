@@ -1,0 +1,4 @@
+<% s_colors = { "open" => "bg-red-100 text-red-800", "in_progress" => "bg-indigo-100 text-indigo-800",
+                "waiting_client" => "bg-amber-100 text-amber-800", "resolved" => "bg-emerald-100 text-emerald-800" } %>
+<span class="inline-block rounded-full px-2 py-0.5 text-xs font-medium <%= s_colors.fetch(ticket.status) %>"><%= ticket.status_label %></span>
+<% if ticket.priority_urgent? %><span class="inline-block rounded-full px-2 py-0.5 text-xs font-medium bg-red-600 text-white">緊急</span><% end %>

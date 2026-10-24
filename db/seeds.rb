@@ -54,6 +54,17 @@ end
 
 yoga.projects.find_or_create_by!(name: "Booking system") { |p| p.phase = :development }
 
+# 已上線嘅 project，用嚟試 maintenance ticket
+site = yoga.projects.find_or_create_by!(name: "品牌網站") { |p| p.phase = :maintenance }
+if site.tickets.empty?
+  client_user = User.find_by!(email_address: "client@demoyoga.example")
+  admin_user = User.find_by!(email_address: admin_email)
+  t = site.tickets.create!(opened_by: client_user, title: "手機版 menu 撳唔到", body: "iPhone Safari 打開，右上角 menu 撳落冇反應", priority: :urgent)
+  t.logs.create!(user: admin_user, logged_on: Date.current, minutes: 45, note: "搵到 z-index 問題，menu 被 banner 遮住，已修正")
+  t.update!(status: :resolved)
+  site.tickets.create!(opened_by: client_user, title: "想喺首頁加 Instagram feed", body: "可唔可以喺首頁底部顯示最新 6 張 IG post？", priority: :low)
+end
+
 # 開好 Round 1，客戶一登入就可以試 UAT 流程
 course.open_next_round! if course.uat_rounds.empty?
 

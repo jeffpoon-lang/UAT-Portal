@@ -12,6 +12,14 @@ class Admin::UatRoundsController < Admin::BaseController
     @round = @project.uat_rounds.find(params[:id])
   end
 
+  def summarise
+    round = @project.uat_rounds.find(params[:id])
+    AiSummaryService.call(round)
+    redirect_to admin_project_uat_round_path(@project, round), notice: "AI 摘要已更新"
+  rescue AiSummaryService::Error => e
+    redirect_to admin_project_uat_round_path(@project, round), alert: "AI 摘要失敗：#{e.message}"
+  end
+
   private
     def set_project = @project = Project.find(params[:project_id])
 end

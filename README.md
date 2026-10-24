@@ -11,6 +11,22 @@ Sign-off 記錄用 Rust（`seal/`）計 SHA-256 hash chain，改過任何一條�
 4. 超出合約 round 數 → 開 CR，客簽咗你撳批核，先開到新 round
 5. 全部 pass → 客輸入全名、剔確認、簽署 → 出 UAT-{CLIENT}-{NNN} 證書，project 自動去 Launch
 6. Sign-offs 頁撳「驗證成條 chain」→ Rust 由頭驗到尾，改過、刪過、調亂過都會報出嚟
+7. 上線後（Launch／Maintenance）客開 maintenance ticket（TKT-{CLIENT}-{NNN}），揀幾急、上載截圖
+8. 你記低每次處理用咗幾耐、做咗咩（客睇得到）；Dashboard 會提你有幾多張未解決、幾多張緊急
+9. Tickets → 月尾報告：揀客戶同月份，列印存 PDF 寄畀客，或者對 retainer 時數
+
+## AI 摘要（OpenAI）
+
+Round 頁撳「用 AI 摘要同分類」：將唔 pass 嘅 comment 分成 Bug、改需求、要問清楚。有改需求會提你開 CR。
+
+```bash
+export OPENAI_API_KEY=sk-...
+export OPENAI_MODEL=gpt-4o-mini   # 可選，換成你想用嘅 model
+```
+
+- 冇 key 唔會壞，只會顯示提示
+- Model 輸出唔會直接信：只保留真係存在嘅 test case 編號同合法分類
+- 客戶 comment 會送去 OpenAI，用真客之前記得喺合約／私隱聲明講明
 
 ## Stack
 
@@ -50,5 +66,5 @@ cd seal && cargo test   # Rust
 
 - [x] 週末 1：Rails 骨架、登入、Client / Project / TestCase、admin CRUD、階段進度條、Rust seal
 - [x] 週末 2：UatRound、TestResult + 截圖、CR、Sign-off（hash chain）、Rust verify、audit 頁、Dockerfile + Render blueprint
-- [ ] 週末 3：Maintenance ticket、月尾報告、AI 摘要
+- [x] 週末 3：Maintenance ticket + 處理記錄、Dashboard 提示、月尾報告（可列印）、AI 摘要同分類
 - [ ] 週末 4：Test、README 架構圖、demo 片

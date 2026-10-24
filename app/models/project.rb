@@ -4,6 +4,7 @@ class Project < ApplicationRecord
   has_many :uat_rounds, -> { order(:number) }, dependent: :destroy
   has_many :change_requests, -> { order(:created_at) }, dependent: :destroy
   has_many :sign_offs, dependent: :restrict_with_error
+  has_many :tickets, -> { order(created_at: :desc) }, dependent: :destroy
 
   # 跟 SOP 嘅交付階段，次序唔好改（存落 DB 嘅係數字）
   PHASES = %w[requirement design development sat uat launch maintenance].freeze
@@ -24,6 +25,8 @@ class Project < ApplicationRecord
   def allowed_uat_rounds
     max_uat_rounds + change_requests.select(&:status_approved?).sum(&:extra_rounds)
   end
+
+  def accepts_tickets? = Ticket::OPEN_PHASES.include?(phase)
 
   def open_round = uat_rounds.detect(&:status_open?)
   def latest_round = uat_rounds.last

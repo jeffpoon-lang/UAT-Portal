@@ -4,6 +4,13 @@
   <%= link_to "新 project", new_admin_project_path, class: "rounded-lg bg-indigo-600 px-4 py-2 text-sm text-white hover:bg-indigo-700" %>
 </div>
 
+<% unresolved = Ticket.unresolved.count %>
+<% if unresolved.positive? %>
+  <%= link_to admin_tickets_path, class: "block rounded-xl #{Ticket.unresolved.priority_urgent.exists? ? "bg-red-50 border-red-200" : "bg-amber-50 border-amber-200"} border px-4 py-3 mb-6 text-sm" do %>
+    有 <strong><%= unresolved %></strong> 張 maintenance ticket 未解決<% if (u = Ticket.unresolved.priority_urgent.count).positive? %>，其中 <strong><%= u %></strong> 張緊急<% end %> →
+  <% end %>
+<% end %>
+
 <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-2 mb-8">
   <% Project::PHASES.each do |phase| %>
     <div class="rounded-lg bg-white border border-slate-200 px-3 py-3">

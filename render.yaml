@@ -24,6 +24,8 @@ services:
         sync: false
       - key: ADMIN_PASSWORD
         sync: false
+      - key: OPENAI_API_KEY
+        sync: false
       - key: PORT
         value: "80"
     # 客戶上載嘅截圖要存喺永久 disk，唔係每次 deploy 會唔見

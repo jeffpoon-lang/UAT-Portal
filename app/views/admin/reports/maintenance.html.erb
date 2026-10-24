@@ -1,0 +1,66 @@
+<% content_for :title, "Maintenance 報告" %>
+<%= form_with url: admin_maintenance_report_path, method: :get, class: "flex flex-wrap items-end gap-3 mb-6 print:hidden" do %>
+  <label class="text-sm">客戶
+    <%= select_tag :client_id, options_from_collection_for_select(@clients, :id, :name, @client&.id), class: "block mt-1 rounded-lg border-slate-300" %>
+  </label>
+  <label class="text-sm">月份
+    <%= month_field_tag :month, @month.strftime("%Y-%m"), class: "block mt-1 rounded-lg border-slate-300" %>
+  </label>
+  <button class="rounded-lg bg-indigo-600 px-4 py-2 text-sm text-white hover:bg-indigo-700 cursor-pointer">睇報告</button>
+  <span class="text-xs text-slate-500">用瀏覽器「列印」存成 PDF 寄畀客</span>
+<% end %>
+
+<% if @report.nil? %>
+  <p class="text-slate-500">未有客戶。</p>
+<% else %>
+  <article class="bg-white rounded-xl border border-slate-200 p-6 print:border-0 print:p-0">
+    <header class="border-b border-slate-200 pb-4 mb-6">
+      <p class="text-xs uppercase tracking-wide text-slate-500">Maintenance 月報</p>
+      <h1 class="text-2xl font-semibold"><%= @client.name %> · <%= @month.strftime("%Y 年 %-m 月") %></h1>
+    </header>
+
+    <div class="grid grid-cols-3 gap-3 mb-8">
+      <div class="rounded-lg bg-slate-50 p-3"><div class="text-xs text-slate-500">新開 ticket</div><div class="text-2xl font-semibold"><%= @report.opened.size %></div></div>
+      <div class="rounded-lg bg-slate-50 p-3"><div class="text-xs text-slate-500">已解決</div><div class="text-2xl font-semibold"><%= @report.resolved.size %></div></div>
+      <div class="rounded-lg bg-slate-50 p-3"><div class="text-xs text-slate-500">處理時間</div><div class="text-2xl font-semibold"><%= MaintenanceReport.format_minutes(@report.total_minutes) %></div></div>
+    </div>
+
+    <h2 class="font-semibold mb-2">本月處理嘅 ticket</h2>
+    <% if @report.minutes_by_ticket.empty? %>
+      <p class="text-sm text-slate-500 mb-6">本月冇處理記錄。</p>
+    <% else %>
+      <table class="w-full text-sm mb-8">
+        <thead class="text-left text-slate-500"><tr><th class="py-1 pr-3">編號</th><th class="py-1 pr-3">內容</th><th class="py-1 pr-3">狀態</th><th class="py-1 text-right">時間</th></tr></thead>
+        <tbody>
+          <% @report.minutes_by_ticket.each do |ticket, minutes| %>
+            <tr class="border-t border-slate-100">
+              <td class="py-1.5 pr-3 font-mono whitespace-nowrap"><%= link_to ticket.doc_number, admin_ticket_path(ticket), class: "hover:underline" %></td>
+              <td class="py-1.5 pr-3"><%= ticket.title %></td>
+              <td class="py-1.5 pr-3 whitespace-nowrap"><%= ticket.status_label %></td>
+              <td class="py-1.5 text-right whitespace-nowrap"><%= MaintenanceReport.format_minutes(minutes) %></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+
+      <h2 class="font-semibold mb-2">處理明細</h2>
+      <ol class="text-sm space-y-2 mb-8">
+        <% @report.logs.each do |log| %>
+          <li class="border-l-2 border-slate-200 pl-3">
+            <div class="text-xs text-slate-500"><%= log.logged_on.strftime("%m-%d") %> · <%= log.ticket.doc_number %> · <%= log.minutes %> 分鐘</div>
+            <div class="whitespace-pre-line"><%= log.note %></div>
+          </li>
+        <% end %>
+      </ol>
+    <% end %>
+
+    <% if @report.still_open.any? %>
+      <h2 class="font-semibold mb-2">未解決（帶去下個月）</h2>
+      <ul class="text-sm list-disc pl-5">
+        <% @report.still_open.each do |t| %>
+          <li><span class="font-mono"><%= t.doc_number %></span> <%= t.title %>（<%= t.status_label %>）</li>
+        <% end %>
+      </ul>
+    <% end %>
+  </article>
+<% end %>
