@@ -1,5 +1,7 @@
 # UAT Portal
 
+[![CI](https://github.com/jeffpoon-lang/UAT-Portal/actions/workflows/ci.yml/badge.svg)](https://github.com/jeffpoon-lang/UAT-Portal/actions/workflows/ci.yml)
+
 A client portal for the last mile of a software project: **user acceptance testing, sign-off and maintenance**, with every sign-off sealed into a tamper-evident hash chain by a small Rust tool.
 
 Built with **Ruby on Rails 8.1**, **Rust** and **Hotwire (Stimulus / Turbo)**, plus an OpenAI-powered triage of client feedback.
