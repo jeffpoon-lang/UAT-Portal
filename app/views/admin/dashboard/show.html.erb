@@ -1,0 +1,30 @@
+<% content_for :title, "Dashboard" %>
+<div class="flex items-center justify-between mb-6">
+  <h1 class="text-2xl font-semibold">Dashboard</h1>
+  <%= link_to "新 project", new_admin_project_path, class: "rounded-lg bg-indigo-600 px-4 py-2 text-sm text-white hover:bg-indigo-700" %>
+</div>
+
+<div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-2 mb-8">
+  <% Project::PHASES.each do |phase| %>
+    <div class="rounded-lg bg-white border border-slate-200 px-3 py-3">
+      <div class="text-xs text-slate-500"><%= Project::PHASE_LABELS[phase] %></div>
+      <div class="text-2xl font-semibold"><%= @counts[phase] || 0 %></div>
+    </div>
+  <% end %>
+</div>
+
+<% if @projects.empty? %>
+  <p class="text-slate-500">未有 project。先 <%= link_to "加客戶", new_admin_client_path, class: "text-indigo-700 underline" %>，再開 project。</p>
+<% else %>
+  <div class="space-y-4">
+    <% @projects.each do |project| %>
+      <%= link_to admin_project_path(project), class: "block rounded-xl bg-white border border-slate-200 p-4 hover:border-indigo-300" do %>
+        <div class="flex items-baseline justify-between mb-3">
+          <span class="font-medium"><%= project.name %></span>
+          <span class="text-sm text-slate-500"><%= project.client.name %></span>
+        </div>
+        <%= render "shared/phase_progress", project: project %>
+      <% end %>
+    <% end %>
+  </div>
+<% end %>

@@ -1,0 +1,11 @@
+<%= form_with model: [ :admin, project, test_case ], class: "space-y-4 max-w-2xl bg-white rounded-xl border border-slate-200 p-6" do |f| %>
+  <%= render "shared/errors", record: test_case %>
+  <div class="flex gap-4">
+    <div><%= f.label :code, "編號", class: "block text-sm mb-1" %><%= f.text_field :code, class: "w-28 rounded-lg border-slate-300 font-mono" %></div>
+    <div><%= f.label :source, "邊個寫", class: "block text-sm mb-1" %><%= f.select :source, [ [ "客戶", "client" ], [ "AE", "ae" ], [ "IT", "it" ] ], {}, class: "rounded-lg border-slate-300" %></div>
+  </div>
+  <div><%= f.label :title, "標題", class: "block text-sm mb-1" %><%= f.text_field :title, class: "w-full rounded-lg border-slate-300" %></div>
+  <div><%= f.label :steps, "步驟", class: "block text-sm mb-1" %><%= f.text_area :steps, rows: 4, class: "w-full rounded-lg border-slate-300" %></div>
+  <div><%= f.label :expected, "預期結果", class: "block text-sm mb-1" %><%= f.text_area :expected, rows: 2, class: "w-full rounded-lg border-slate-300" %></div>
+  <%= f.submit "儲存", class: "rounded-lg bg-indigo-600 px-4 py-2 text-sm text-white hover:bg-indigo-700 cursor-pointer" %>
+<% end %>

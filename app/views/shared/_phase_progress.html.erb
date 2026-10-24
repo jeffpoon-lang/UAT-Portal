@@ -1,0 +1,19 @@
+<%# 七個階段嘅進度條：已完成 = 實色，而家 = 加粗外框，未到 = 灰。
+    手機版只顯示幼條 + 而家階段名，避免七個字標擠爆。 %>
+<div>
+  <p class="sm:hidden text-xs text-slate-600 mb-1.5">
+    第 <%= project.phase_index + 1 %>／<%= Project::PHASES.size %> 步：<strong class="text-indigo-800"><%= project.phase_label %></strong>
+  </p>
+  <ol class="grid grid-cols-7 gap-1" aria-label="交付階段">
+    <% Project::PHASES.each_with_index do |phase, i| %>
+      <% state = i < project.phase_index ? :done : (i == project.phase_index ? :current : :todo) %>
+      <li class="rounded-md text-center text-xs h-2 sm:h-auto sm:px-1 sm:py-2 overflow-hidden
+        <%= { done: "bg-indigo-600 text-white",
+              current: "bg-indigo-300 sm:bg-indigo-50 text-indigo-800 sm:ring-2 sm:ring-inset sm:ring-indigo-600 font-semibold",
+              todo: "bg-slate-200 sm:bg-slate-100 text-slate-500" }[state] %>"
+        <%= "aria-current=step" if state == :current %> title="<%= Project::PHASE_LABELS[phase] %>">
+        <span class="sr-only sm:not-sr-only"><%= Project::PHASE_LABELS[phase] %></span>
+      </li>
+    <% end %>
+  </ol>
+</div>

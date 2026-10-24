@@ -1,0 +1,9 @@
+yoga:
+  name: Demo Yoga Studio
+  code: DEMOYOGA
+  contact_email: hello@demoyoga.example
+
+music:
+  name: Demo Music School
+  code: DEMOMUSIC
+  contact_email: hi@demomusic.example

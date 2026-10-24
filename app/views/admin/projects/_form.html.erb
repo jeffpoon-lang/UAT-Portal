@@ -1,0 +1,9 @@
+<%= form_with model: [ :admin, project ], class: "space-y-4 max-w-lg bg-white rounded-xl border border-slate-200 p-6" do |f| %>
+  <%= render "shared/errors", record: project %>
+  <div><%= f.label :client_id, "客戶", class: "block text-sm mb-1" %><%= f.collection_select :client_id, Client.order(:name), :id, :name, { prompt: "揀客戶" }, class: "w-full rounded-lg border-slate-300" %></div>
+  <div><%= f.label :name, "Project 名", class: "block text-sm mb-1" %><%= f.text_field :name, class: "w-full rounded-lg border-slate-300" %></div>
+  <div><%= f.label :phase, "而家階段", class: "block text-sm mb-1" %><%= f.select :phase, Project::PHASES.map { |p| [ Project::PHASE_LABELS[p], p ] }, {}, class: "w-full rounded-lg border-slate-300" %></div>
+  <div><%= f.label :max_uat_rounds, "UAT 包幾多 round", class: "block text-sm mb-1" %><%= f.number_field :max_uat_rounds, min: 1, class: "w-32 rounded-lg border-slate-300" %></div>
+  <div><%= f.label :maintenance_start_on, "Maintenance 開始日（handover 當日）", class: "block text-sm mb-1" %><%= f.date_field :maintenance_start_on, class: "rounded-lg border-slate-300" %></div>
+  <%= f.submit "儲存", class: "rounded-lg bg-indigo-600 px-4 py-2 text-sm text-white hover:bg-indigo-700 cursor-pointer" %>
+<% end %>

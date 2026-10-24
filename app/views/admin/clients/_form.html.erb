@@ -1,0 +1,10 @@
+<%= form_with model: [ :admin, client ], class: "space-y-4 max-w-lg bg-white rounded-xl border border-slate-200 p-6" do |f| %>
+  <%= render "shared/errors", record: client %>
+  <div><%= f.label :name, "客戶名", class: "block text-sm mb-1" %><%= f.text_field :name, class: "w-full rounded-lg border-slate-300" %></div>
+  <div>
+    <%= f.label :code, "Code（用喺文件編號，例如 UAT-AHYU-001）", class: "block text-sm mb-1" %>
+    <%= f.text_field :code, class: "w-full rounded-lg border-slate-300 font-mono uppercase" %>
+  </div>
+  <div><%= f.label :contact_email, "聯絡 email", class: "block text-sm mb-1" %><%= f.email_field :contact_email, class: "w-full rounded-lg border-slate-300" %></div>
+  <%= f.submit "儲存", class: "rounded-lg bg-indigo-600 px-4 py-2 text-sm text-white hover:bg-indigo-700 cursor-pointer" %>
+<% end %>

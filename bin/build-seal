@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+# Build Rust 嘅 uat-seal，再放入 bin/ 畀 Rails 用。
+# 換機（例如 Mac ↔ Linux server）之後要重新跑一次。
+set -euo pipefail
+cd "$(dirname "$0")/../seal"
+cargo build --release
+cp target/release/uat-seal ../bin/uat-seal
+echo "built bin/uat-seal"

@@ -1,0 +1,18 @@
+<% content_for :title, "客戶" %>
+<div class="flex items-center justify-between mb-6">
+  <h1 class="text-2xl font-semibold">客戶</h1>
+  <%= link_to "新客戶", new_admin_client_path, class: "rounded-lg bg-indigo-600 px-4 py-2 text-sm text-white hover:bg-indigo-700" %>
+</div>
+<table class="w-full bg-white rounded-xl border border-slate-200 text-sm">
+  <thead class="text-left text-slate-500"><tr><th class="px-4 py-2">名</th><th class="px-4 py-2">Code</th><th class="px-4 py-2">Email</th><th class="px-4 py-2">Projects</th></tr></thead>
+  <tbody>
+    <% @clients.each do |c| %>
+      <tr class="border-t border-slate-100">
+        <td class="px-4 py-2"><%= link_to c.name, admin_client_path(c), class: "text-indigo-700 hover:underline" %></td>
+        <td class="px-4 py-2 font-mono"><%= c.code %></td>
+        <td class="px-4 py-2"><%= c.contact_email %></td>
+        <td class="px-4 py-2"><%= c.projects.size %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>

@@ -1,0 +1,11 @@
+yoga_course:
+  client: yoga
+  name: 網上課程
+  phase: 4
+  max_uat_rounds: 3
+
+music_app:
+  client: music
+  name: Music app
+  phase: 2
+  max_uat_rounds: 3

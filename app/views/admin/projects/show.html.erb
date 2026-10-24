@@ -1,0 +1,40 @@
+<% content_for :title, @project.name %>
+<div class="flex items-start justify-between mb-6 gap-4">
+  <div>
+    <h1 class="text-2xl font-semibold"><%= @project.name %></h1>
+    <p class="text-sm text-slate-500">
+      <%= link_to @project.client.name, admin_client_path(@project.client), class: "hover:underline" %>
+      · UAT 包 <%= @project.max_uat_rounds %> round
+      <% if @project.maintenance_start_on %> · Maintenance 由 <%= @project.maintenance_start_on.strftime("%Y-%m-%d") %> 起<% end %>
+    </p>
+  </div>
+  <%= link_to "改 project", edit_admin_project_path(@project), class: "shrink-0 rounded-lg border border-slate-300 px-4 py-2 text-sm hover:bg-white" %>
+</div>
+
+<div class="mb-8"><%= render "shared/phase_progress", project: @project %></div>
+
+<div class="flex items-center justify-between mb-3">
+  <h2 class="text-lg font-semibold">Test cases（<%= @project.test_cases.size %>）</h2>
+  <%= link_to "加 test case", new_admin_project_test_case_path(@project), class: "rounded-lg bg-indigo-600 px-4 py-2 text-sm text-white hover:bg-indigo-700" %>
+</div>
+<% if @project.test_cases.empty? %>
+  <p class="text-slate-500 text-sm">未有 test case。SOP 要求客最少交 10 條。</p>
+<% else %>
+  <table class="w-full bg-white rounded-xl border border-slate-200 text-sm">
+    <thead class="text-left text-slate-500"><tr><th class="px-4 py-2">編號</th><th class="px-4 py-2">標題</th><th class="px-4 py-2">預期結果</th><th class="px-4 py-2">來源</th><th></th></tr></thead>
+    <tbody>
+      <% @project.test_cases.each do |tc| %>
+        <tr class="border-t border-slate-100 align-top">
+          <td class="px-4 py-2 font-mono"><%= tc.code %></td>
+          <td class="px-4 py-2"><%= tc.title %></td>
+          <td class="px-4 py-2 text-slate-600"><%= tc.expected %></td>
+          <td class="px-4 py-2 uppercase text-xs"><%= tc.source %></td>
+          <td class="px-4 py-2 text-right whitespace-nowrap">
+            <%= link_to "改", edit_admin_project_test_case_path(@project, tc), class: "text-indigo-700 hover:underline" %>
+            <%= button_to "刪", admin_project_test_case_path(@project, tc), method: :delete, form_class: "inline ml-2", class: "text-red-700 hover:underline cursor-pointer", data: { turbo_confirm: "確定刪 #{tc.code}？" } %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+<% end %>

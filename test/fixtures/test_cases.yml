@@ -1,0 +1,13 @@
+checkout:
+  project: yoga_course
+  code: TC-01
+  title: 撳立即報名去到 checkout
+  expected: 價錢顯示正確
+  source: 0
+
+payment:
+  project: yoga_course
+  code: TC-02
+  title: Stripe 測試卡付款
+  expected: 收到確認 email
+  source: 0

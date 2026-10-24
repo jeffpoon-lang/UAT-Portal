@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= content_for(:title) || "UAT Portal" %></title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="application-name" content="Uat Portal">
+    <meta name="mobile-web-app-capable" content="yes">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+
+    <%= yield :head %>
+
+    <%# Enable PWA manifest for installable apps (make sure to enable in config/routes.rb too!) %>
+    <%#= tag.link rel: "manifest", href: pwa_manifest_path(format: :json) %>
+
+    <link rel="icon" href="/icon.png" type="image/png">
+    <link rel="icon" href="/icon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="/icon.png">
+
+    <%# Includes all stylesheet files in app/assets/stylesheets %>
+    <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
+    <%= javascript_importmap_tags %>
+  </head>
+
+  <body class="bg-slate-50 text-slate-800 min-h-screen">
+    <% if authenticated? %>
+      <header class="bg-white border-b border-slate-200">
+        <nav class="max-w-5xl mx-auto px-4 h-14 flex items-center gap-4 sm:gap-6 text-sm whitespace-nowrap">
+          <%= link_to "UAT Portal", root_path, class: "font-semibold text-slate-900" %>
+          <% if Current.user.role_admin? %>
+            <%= link_to "Dashboard", admin_root_path, class: "text-slate-600 hover:text-slate-900" %>
+            <%= link_to "客戶", admin_clients_path, class: "text-slate-600 hover:text-slate-900" %>
+            <%= link_to "Projects", admin_projects_path, class: "text-slate-600 hover:text-slate-900" %>
+          <% else %>
+            <%= link_to "我嘅 project", portal_projects_path, class: "text-slate-600 hover:text-slate-900" %>
+          <% end %>
+          <span class="ml-auto hidden md:inline text-slate-500"><%= Current.user.email_address %></span>
+          <%= button_to "登出", session_path, method: :delete, form_class: "ml-auto md:ml-0", class: "text-slate-600 hover:text-slate-900 cursor-pointer" %>
+        </nav>
+      </header>
+    <% end %>
+    <main class="max-w-5xl mx-auto px-4 py-8">
+      <% if notice %><p class="mb-6 rounded-lg bg-emerald-50 border border-emerald-200 px-4 py-2 text-emerald-800"><%= notice %></p><% end %>
+      <% if alert %><p class="mb-6 rounded-lg bg-red-50 border border-red-200 px-4 py-2 text-red-800"><%= alert %></p><% end %>
+      <%= yield %>
+    </main>
+  </body>
+</html>

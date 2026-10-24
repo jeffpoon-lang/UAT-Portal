@@ -1,0 +1,19 @@
+<% content_for :title, @client.name %>
+<div class="flex items-center justify-between mb-6">
+  <div>
+    <h1 class="text-2xl font-semibold"><%= @client.name %></h1>
+    <p class="text-sm text-slate-500"><span class="font-mono"><%= @client.code %></span> · <%= @client.contact_email %></p>
+  </div>
+  <div class="flex gap-2">
+    <%= link_to "改資料", edit_admin_client_path(@client), class: "rounded-lg border border-slate-300 px-4 py-2 text-sm hover:bg-white" %>
+    <%= link_to "新 project", new_admin_project_path(client_id: @client.id), class: "rounded-lg bg-indigo-600 px-4 py-2 text-sm text-white hover:bg-indigo-700" %>
+  </div>
+</div>
+<div class="space-y-4">
+  <% @projects.each do |project| %>
+    <%= link_to admin_project_path(project), class: "block rounded-xl bg-white border border-slate-200 p-4 hover:border-indigo-300" do %>
+      <div class="font-medium mb-3"><%= project.name %></div>
+      <%= render "shared/phase_progress", project: project %>
+    <% end %>
+  <% end %>
+</div>
