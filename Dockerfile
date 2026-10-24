@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1
 # Production image：先 build Rust 嘅 uat-seal，再放入 Rails image。
 #   docker build -t uat-portal .
-#   docker run -p 3000:80 -e RAILS_MASTER_KEY=... -e DATABASE_URL=... uat-portal
+#   docker run -p 3000:3000 -e RAILS_MASTER_KEY=... -e DATABASE_URL=... uat-portal
 
 ARG RUBY_VERSION=3.3.6
 
@@ -46,5 +46,6 @@ RUN groupadd --system --gid 1000 rails && \
     mkdir -p db log storage tmp && chown -R rails:rails db log storage tmp
 USER 1000:1000
 ENTRYPOINT ["/rails/bin/docker-entrypoint"]
-EXPOSE 80
-CMD ["./bin/rails", "server", "-b", "0.0.0.0", "-p", "80"]
+# rails server 會用 $PORT（Render 會自動提供），冇就用 3000
+EXPOSE 3000
+CMD ["./bin/rails", "server", "-b", "0.0.0.0"]

@@ -40,6 +40,9 @@ Rails.application.routes.draw do
     resources :sign_offs, only: :show
   end
 
+  # 截圖由 Postgres 讀出嚟（active_storage_db）
+  mount ActiveStorageDB::Engine => "/active_storage_db"
+
   get "up" => "rails/health#show", as: :rails_health_check
 
   root "home#show"

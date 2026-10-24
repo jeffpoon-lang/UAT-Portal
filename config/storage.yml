@@ -6,6 +6,10 @@ local:
   service: Disk
   root: <%= Rails.root.join("storage") %>
 
+# Production：截圖直接存入 Postgres（Render 免費版冇永久硬碟）
+db:
+  service: DB
+
 # Use bin/rails credentials:edit to set the AWS secrets (as aws:access_key_id|secret_access_key)
 # amazon:
 #   service: S3

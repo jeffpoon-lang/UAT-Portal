@@ -1,35 +1,21 @@
-# Render Blueprint：喺 Render dashboard 揀「New → Blueprint」再指去個 GitHub repo
-# 要自己喺 dashboard 填 RAILS_MASTER_KEY（config/master.key 嘅內容）、ADMIN_EMAIL、ADMIN_PASSWORD
-databases:
-  - name: uat-portal-db
-    plan: free
-    databaseName: uat_portal_production
-    user: uat_portal
-
+# Render Blueprint（免費版）：Docker web service，database 用外面嘅 Postgres（例如 Neon）
+# 喺 Render dashboard 填：DATABASE_URL、RAILS_MASTER_KEY、ADMIN_EMAIL、ADMIN_PASSWORD
+# 截圖存入 Postgres（active_storage_db），所以唔使永久 disk
 services:
   - type: web
     name: uat-portal
     runtime: docker
-    plan: starter
+    plan: free
+    region: frankfurt
     healthCheckPath: /up
     envVars:
       - key: DATABASE_URL
-        fromDatabase:
-          name: uat-portal-db
-          property: connectionString
+        sync: false
       - key: RAILS_MASTER_KEY
         sync: false
-      # 第一次 deploy 用嚟建你個 admin 帳號（之後可以刪走）
       - key: ADMIN_EMAIL
         sync: false
       - key: ADMIN_PASSWORD
         sync: false
       - key: OPENAI_API_KEY
         sync: false
-      - key: PORT
-        value: "80"
-    # 客戶上載嘅截圖要存喺永久 disk，唔係每次 deploy 會唔見
-    disk:
-      name: storage
-      mountPath: /rails/storage
-      sizeGB: 1
