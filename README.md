@@ -6,6 +6,8 @@ A client portal for the last mile of a software project: **user acceptance testi
 
 Built with **Ruby on Rails 8.1**, **Rust** and **Hotwire (Stimulus / Turbo)**, plus an OpenAI-powered triage of client feedback.
 
+**Live:** [uat-portal-ur56.onrender.com](https://uat-portal-ur56.onrender.com) (free tier, so the first visit after a quiet spell takes about a minute to wake up)
+
 **[Watch the 90-second demo](docs/demo.mp4)**: a failed round, a fix, a sealed sign-off, and a database edit caught by verification.
 
 > 廣東話版本：[README.zh-HK.md](README.zh-HK.md)
@@ -155,7 +157,13 @@ export OPENAI_MODEL=gpt-4o-mini   # any chat model that supports JSON output
 
 ## Deployment
 
-The `Dockerfile` builds and tests `uat-seal` in a Rust stage, then copies the binary into the Rails image. `render.yaml` is a Render Blueprint with PostgreSQL and a persistent disk for screenshots. Set `RAILS_MASTER_KEY`, `ADMIN_EMAIL`, `ADMIN_PASSWORD` and optionally `OPENAI_API_KEY`; migrations run automatically on boot.
+Running on **Render's free tier** (Docker, Frankfurt) with **Neon's free Postgres** (Frankfurt), at no cost.
+
+- The `Dockerfile` builds and tests `uat-seal` in a Rust stage, then copies the binary into the Rails image. The container listens on `$PORT` as a non-root user.
+- Free Render instances have no persistent disk, so screenshots are stored in Postgres via [active_storage_db](https://github.com/blocknotes/active_storage_db).
+- Each boot runs `db:prepare`, then an idempotent seed that creates the admin from `ADMIN_EMAIL` / `ADMIN_PASSWORD`. No demo data is created in production.
+- Environment: `DATABASE_URL` (Neon direct connection, not the pooler, so migrations work), `RAILS_MASTER_KEY`, `ADMIN_EMAIL`, `ADMIN_PASSWORD`, `WEB_CONCURRENCY=0` (single Puma process for 512 MB), and optionally `OPENAI_API_KEY`.
+- `render.yaml` describes the same setup as a Blueprint. Pushing to `main` redeploys automatically.
 
 ## Limitations and next steps
 
