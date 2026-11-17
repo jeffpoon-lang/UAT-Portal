@@ -17,6 +17,10 @@
   <%= form_with model: [ :admin, @ticket ], method: :patch, class: "space-y-3 bg-white rounded-xl border border-slate-200 p-5" do |f| %>
     <h2 class="font-semibold">狀態</h2>
     <div><%= f.label :status, "狀態", class: "block text-sm mb-1" %><%= f.select :status, Ticket::STATUS_LABELS.map { |k, v| [ v, k ] }, {}, class: "w-full rounded-lg border-slate-300" %></div>
+    <div>
+      <%= f.label :kind, "類別", class: "block text-sm mb-1" %><%= f.select :kind, Ticket::KIND_LABELS.map { |k, v| [ v, k ] }, {}, class: "w-full rounded-lg border-slate-300" %>
+      <p class="text-xs text-slate-500 mt-1">改做「系統故障」唔計 retainer 輪數，亦唔收額外費用</p>
+    </div>
     <div><%= f.label :priority, "優先度", class: "block text-sm mb-1" %><%= f.select :priority, Ticket::PRIORITY_LABELS.map { |k, v| [ v, k ] }, {}, class: "w-full rounded-lg border-slate-300" %></div>
     <%= f.submit "更新", class: "rounded-lg border border-slate-300 px-4 py-2 text-sm hover:bg-slate-50 cursor-pointer" %>
   <% end %>

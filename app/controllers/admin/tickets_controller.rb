@@ -18,7 +18,7 @@ class Admin::TicketsController < Admin::BaseController
 
   def update
     @ticket = Ticket.find(params[:id])
-    if @ticket.update(params.expect(ticket: [ :status, :priority ]))
+    if @ticket.update(params.expect(ticket: [ :status, :priority, :kind ]))
       redirect_to admin_ticket_path(@ticket), notice: "已更新：#{@ticket.status_label}"
     else
       redirect_to admin_ticket_path(@ticket), alert: @ticket.errors.full_messages.to_sentence

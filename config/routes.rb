@@ -4,7 +4,15 @@ Rails.application.routes.draw do
 
   namespace :admin do
     root "dashboard#show"
-    resources :clients, except: :destroy
+    resources :clients, except: :destroy do
+      resource :retainer_plan, only: [ :new, :create, :edit, :update ] do
+        post :give_notice
+        post :withdraw_notice
+      end
+    end
+    resources :handover_items, only: :update
+    resources :monthly_updates, only: :create
+    get "retention", to: "retention#show", as: :retention
     resources :projects, except: :destroy do
       resources :test_cases, except: [ :index, :show ]
       resources :uat_rounds, only: [ :create, :show ] do
@@ -38,6 +46,8 @@ Rails.application.routes.draw do
       resources :tickets, only: [ :new, :create, :show ]
     end
     resources :sign_offs, only: :show
+    resource :retainer, only: :show
+    resources :handover_items, only: :update
   end
 
   # 截圖由 Postgres 讀出嚟（active_storage_db）

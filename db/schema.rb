@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_24_200920) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_17_120300) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -71,6 +71,30 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_24_200920) do
     t.index ["code"], name: "index_clients_on_code", unique: true
   end
 
+  create_table "handover_items", force: :cascade do |t|
+    t.bigint "retainer_plan_id", null: false
+    t.integer "position", default: 0, null: false
+    t.string "title", null: false
+    t.integer "side", default: 0, null: false
+    t.datetime "done_at"
+    t.bigint "done_by_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["done_by_id"], name: "index_handover_items_on_done_by_id"
+    t.index ["retainer_plan_id"], name: "index_handover_items_on_retainer_plan_id"
+  end
+
+  create_table "monthly_updates", force: :cascade do |t|
+    t.bigint "client_id", null: false
+    t.date "month", null: false
+    t.text "done_summary"
+    t.text "next_steps"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["client_id", "month"], name: "index_monthly_updates_on_client_id_and_month", unique: true
+    t.index ["client_id"], name: "index_monthly_updates_on_client_id"
+  end
+
   create_table "projects", force: :cascade do |t|
     t.bigint "client_id", null: false
     t.string "name", null: false
@@ -80,6 +104,21 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_24_200920) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["client_id"], name: "index_projects_on_client_id"
+  end
+
+  create_table "retainer_plans", force: :cascade do |t|
+    t.bigint "client_id", null: false
+    t.integer "monthly_fee_hkd", null: false
+    t.integer "included_rounds", default: 3, null: false
+    t.integer "extra_round_hkd", default: 500, null: false
+    t.date "starts_on", null: false
+    t.integer "notice_days", default: 30, null: false
+    t.string "quote_ref"
+    t.date "notice_given_on"
+    t.integer "notice_given_by"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["client_id"], name: "index_retainer_plans_on_client_id", unique: true
   end
 
   create_table "sessions", force: :cascade do |t|
@@ -159,6 +198,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_24_200920) do
     t.datetime "resolved_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "kind", default: 0, null: false
+    t.boolean "extra_round", default: false, null: false
+    t.datetime "extra_round_confirmed_at"
     t.index ["doc_number"], name: "index_tickets_on_doc_number", unique: true
     t.index ["opened_by_id"], name: "index_tickets_on_opened_by_id"
     t.index ["project_id"], name: "index_tickets_on_project_id"
@@ -193,7 +235,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_24_200920) do
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "change_requests", "projects"
+  add_foreign_key "handover_items", "retainer_plans"
+  add_foreign_key "handover_items", "users", column: "done_by_id"
+  add_foreign_key "monthly_updates", "clients"
   add_foreign_key "projects", "clients"
+  add_foreign_key "retainer_plans", "clients"
   add_foreign_key "sessions", "users"
   add_foreign_key "sign_offs", "projects"
   add_foreign_key "sign_offs", "uat_rounds"

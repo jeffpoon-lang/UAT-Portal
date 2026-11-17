@@ -14,6 +14,9 @@ Sign-off 記錄用 Rust（`seal/`）計 SHA-256 hash chain，改過任何一條�
 7. 上線後（Launch／Maintenance）客開 maintenance ticket（TKT-{CLIENT}-{NNN}），揀幾急、上載截圖
 8. 你記低每次處理用咗幾耐、做咗咩（客睇得到）；Dashboard 會提你有幾多張未解決、幾多張緊急
 9. Tickets → 月尾報告：揀客戶同月份，列印存 PDF 寄畀客，或者對 retainer 時數
+10. 客戶頁 →「設定 retainer」：月費、每月包幾多輪修改、超出每輪幾錢、通知期。「修改」ticket 計一輪，「系統故障」唔計；用晒之後客要剔確認先開到下一張修改，額外輪數自動入月尾報告（連本月應付總數），報告度仲可以寫「本月完成／下月建議」
+11. 任何一方通知終止 → 客戶頁「記錄通知終止」：自動計完結日，列出交接清單，兩邊各自剔；客喺 portal「月費維護」頁剔自己嗰份
+12. Retention 頁：每個已上線客戶一行，標出已通知終止、上線但未有 retainer、經常超出（建議升級）、用量偏低（主動約傾），同埋生效中月費總和
 
 ## AI 摘要（OpenAI）
 
@@ -68,3 +71,4 @@ cd seal && cargo test   # Rust
 - [x] 週末 2：UatRound、TestResult + 截圖、CR、Sign-off（hash chain）、Rust verify、audit 頁、Dockerfile + Render blueprint
 - [x] 週末 3：Maintenance ticket + 處理記錄、Dashboard 提示、月尾報告（可列印）、AI 摘要同分類
 - [x] 週末 4：GitHub Actions CI（Rust fmt／clippy／test、RuboCop、Brakeman、audit、Rails test）、英文 README + 架構圖、90 秒 demo 片（docs/demo.mp4）
+- [x] 週末 5：Retainer（每月修改輪數、額外輪確認、月報應付金額、進度更新）、通知終止＋交接清單、Retention 儀表板

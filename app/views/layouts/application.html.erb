@@ -33,9 +33,13 @@
             <%= link_to "客戶", admin_clients_path, class: "text-slate-600 hover:text-slate-900" %>
             <%= link_to "Projects", admin_projects_path, class: "text-slate-600 hover:text-slate-900" %>
             <%= link_to "Tickets", admin_tickets_path, class: "text-slate-600 hover:text-slate-900" %>
+            <%= link_to "Retention", admin_retention_path, class: "text-slate-600 hover:text-slate-900" %>
             <%= link_to "Sign-offs", admin_sign_offs_path, class: "text-slate-600 hover:text-slate-900" %>
           <% else %>
             <%= link_to "我嘅 project", portal_projects_path, class: "text-slate-600 hover:text-slate-900" %>
+            <% if Current.user.client&.retainer_plan %>
+              <%= link_to "月費維護", portal_retainer_path, class: "text-slate-600 hover:text-slate-900" %>
+            <% end %>
           <% end %>
           <span class="ml-auto hidden md:inline text-slate-500"><%= Current.user.email_address %></span>
           <%= button_to "登出", session_path, method: :delete, form_class: "ml-auto md:ml-0", class: "text-slate-600 hover:text-slate-900 cursor-pointer" %>

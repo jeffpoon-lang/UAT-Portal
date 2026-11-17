@@ -38,6 +38,9 @@ UAT Portal replaces that with one place where:
 - **Chain verification**: one button re-checks every sign-off from the first to the last and reports exactly which record broke and why.
 - **Maintenance tickets**: available after launch, with priority, screenshots and time logs that the client can read.
 - **Monthly maintenance report**: tickets opened and resolved, time spent per ticket and work done, printable to PDF.
+- **Retainer**: each client can have a monthly plan (fee, change rounds included, price per extra round, notice period). A *change* ticket uses one round; a *fault* ticket uses none. Once the month's rounds are used up, the client must tick a confirmation before opening another change, so extra charges are agreed in advance. The monthly report adds the fee, rounds used, extra rounds and the amount due, plus a "done this month / suggested next" note.
+- **Notice and handover**: recording a notice of termination sets the end date from the notice period and lists a handover checklist. Each side ticks its own items; the client cannot tick the provider's.
+- **Retention dashboard**: one row per live client with rounds used, months with extra rounds and the last ticket, flagged as *notice given*, *live but no retainer*, *often over (suggest an upgrade)*, *low usage (get in touch)* or *healthy*, plus the total monthly fees in force.
 - **AI triage**: failing UAT comments are summarised and classified as *bug*, *change request* or *unclear*, with a prompt to raise a change request when scope is creeping.
 
 ## Architecture
@@ -129,7 +132,7 @@ The seal is the one piece whose correctness the whole sign-off depends on, so I 
 ## Tests
 
 ```bash
-bin/rails test           # 62 tests: models, services, full UAT and maintenance journeys
+bin/rails test           # 78 tests: models, services, full UAT, maintenance and retainer journeys
 cd seal && cargo test    # 10 tests: sealing and every tampering case above
 ```
 
