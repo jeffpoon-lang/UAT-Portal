@@ -59,10 +59,18 @@ site = yoga.projects.find_or_create_by!(name: "品牌網站") { |p| p.phase = :m
 if site.tickets.empty?
   client_user = User.find_by!(email_address: "client@demoyoga.example")
   admin_user = User.find_by!(email_address: admin_email)
-  t = site.tickets.create!(opened_by: client_user, title: "手機版 menu 撳唔到", body: "iPhone Safari 打開，右上角 menu 撳落冇反應", priority: :urgent)
+  t = site.tickets.create!(opened_by: client_user, title: "手機版 menu 撳唔到", body: "iPhone Safari 打開，右上角 menu 撳落冇反應", priority: :urgent, kind: :fault)
   t.logs.create!(user: admin_user, logged_on: Date.current, minutes: 45, note: "搵到 z-index 問題，menu 被 banner 遮住，已修正")
   t.update!(status: :resolved)
   site.tickets.create!(opened_by: client_user, title: "想喺首頁加 Instagram feed", body: "可唔可以喺首頁底部顯示最新 6 張 IG post？", priority: :low)
+end
+
+# 月費維護：每月 HK$2,600 包 3 輪修改，超出每輪 HK$500，通知期 30 日
+yoga.create_retainer_plan!(monthly_fee_hkd: 2600, included_rounds: 3, extra_round_hkd: 500,
+                           starts_on: Date.current.beginning_of_month, notice_days: 30, quote_ref: "QUO-DEMO-006") unless yoga.retainer_plan
+MonthlyUpdate.find_or_create_by!(client: yoga, month: Date.current.beginning_of_month) do |u|
+  u.done_summary = "修好手機版 menu；首頁加 Instagram feed 評估中"
+  u.next_steps = "建議下月加 FAQ 頁，減少重複查詢"
 end
 
 # 開好 Round 1，客戶一登入就可以試 UAT 流程

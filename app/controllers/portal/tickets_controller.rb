@@ -24,7 +24,7 @@ class Portal::TicketsController < Portal::BaseController
     def set_project = @project = project_scope.find(params[:project_id])
 
     def ticket_params
-      attrs = params.expect(ticket: [ :title, :body, :priority, screenshots: [] ])
+      attrs = params.expect(ticket: [ :title, :body, :priority, :kind, :confirm_extra_round, screenshots: [] ])
       attrs[:screenshots] = Array(attrs[:screenshots]).compact_blank if attrs.key?(:screenshots)
       attrs
     end

@@ -3,6 +3,20 @@
 <h1 class="text-2xl font-semibold mb-6">報問題／要求改動</h1>
 <%= form_with model: @ticket, url: portal_project_tickets_path(@project), class: "space-y-4 max-w-xl bg-white rounded-xl border border-slate-200 p-6" do |f| %>
   <%= render "shared/errors", record: @ticket %>
+  <% plan = @project.client.retainer_plan %>
+  <% if plan&.active_on?(Date.current) %><%= render "shared/retainer_usage", plan: plan, today: Date.current %><% end %>
+  <fieldset>
+    <legend class="text-sm mb-1">類別</legend>
+    <div class="flex flex-wrap gap-2">
+      <% [ [ "change", "要求改動" ], [ "fault", "系統故障（本來用得，而家壞咗）" ] ].each do |value, label| %>
+        <label class="cursor-pointer">
+          <%= f.radio_button :kind, value, class: "peer sr-only" %>
+          <span class="block rounded-lg border border-slate-300 px-4 py-2 text-sm peer-checked:bg-indigo-600 peer-checked:text-white peer-checked:border-transparent peer-focus-visible:ring-2 peer-focus-visible:ring-indigo-500"><%= label %></span>
+        </label>
+      <% end %>
+    </div>
+    <% if plan %><p class="text-xs text-slate-500 mt-1">系統故障唔計修改輪數。</p><% end %>
+  </fieldset>
   <div><%= f.label :title, "一句講咩問題", class: "block text-sm mb-1" %><%= f.text_field :title, class: "w-full rounded-lg border-slate-300", placeholder: "例如：報名表撳提交冇反應" %></div>
   <div><%= f.label :body, "詳細情況", class: "block text-sm mb-1" %><%= f.text_area :body, rows: 5, class: "w-full rounded-lg border-slate-300", placeholder: "喺邊一頁、做咗咩、見到咩、幾時開始" %></div>
   <fieldset>
@@ -17,5 +31,14 @@
     </div>
   </fieldset>
   <div><%= f.label :screenshots, "截圖（可以揀多張）", class: "block text-sm mb-1" %><%= f.file_field :screenshots, multiple: true, accept: "image/*", class: "text-sm file:mr-2 file:rounded-lg file:border-0 file:bg-slate-100 file:px-3 file:py-2" %></div>
+  <% if plan&.next_round_is_extra? %>
+    <div class="rounded-lg bg-amber-50 border border-amber-200 px-4 py-3 text-sm">
+      <p class="mb-2">本月 <%= plan.included_rounds %> 輪修改已經用晒。如果呢張係「要求改動」，會計做額外一輪，另收 <strong><%= hkd(plan.extra_round_hkd) %></strong>，喺下個月月費單一併結算。</p>
+      <label class="flex items-start gap-2 cursor-pointer">
+        <%= f.check_box :confirm_extra_round, class: "mt-0.5 rounded border-slate-400" %>
+        <span>我明白，確認開額外一輪</span>
+      </label>
+    </div>
+  <% end %>
   <%= f.submit "提交", class: "rounded-lg bg-indigo-600 px-5 py-2 text-sm text-white hover:bg-indigo-700 cursor-pointer" %>
 <% end %>

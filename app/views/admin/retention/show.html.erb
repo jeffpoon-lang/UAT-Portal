@@ -1,0 +1,47 @@
+<% content_for :title, "Retention" %>
+<div class="flex flex-wrap items-end justify-between gap-3 mb-6">
+  <div>
+    <h1 class="text-2xl font-semibold">Retention</h1>
+    <p class="text-sm text-slate-500">已上線客戶嘅月費維護用量，同邊個要主動跟進</p>
+  </div>
+  <div class="rounded-lg bg-white border border-slate-200 px-4 py-2 text-right">
+    <div class="text-xs text-slate-500">生效中月費總和</div>
+    <div class="text-xl font-semibold"><%= hkd(@mrr) %></div>
+  </div>
+</div>
+
+<% if @rows.empty? %>
+  <p class="text-slate-500">未有已上線或者有 retainer 嘅客戶。</p>
+<% else %>
+  <div class="overflow-x-auto rounded-xl bg-white border border-slate-200">
+    <table class="w-full text-sm">
+      <thead class="text-left text-slate-500 bg-slate-50 whitespace-nowrap">
+        <tr>
+          <th class="px-4 py-2">客戶</th>
+          <th class="px-4 py-2">月費</th>
+          <th class="px-4 py-2">本月修改</th>
+          <th class="px-4 py-2">近 3 個月有超出</th>
+          <th class="px-4 py-2">最後一張 ticket</th>
+          <th class="px-4 py-2">訊號</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @rows.each do |row| %>
+          <% plan = row.plan %>
+          <tr class="border-t border-slate-100">
+            <td class="px-4 py-2 min-w-32"><%= link_to row.client.name, admin_client_path(row.client), class: "text-indigo-700 hover:underline" %></td>
+            <td class="px-4 py-2 whitespace-nowrap"><%= plan ? hkd(plan.monthly_fee_hkd) : "—" %></td>
+            <td class="px-4 py-2 whitespace-nowrap"><%= plan ? "#{row.rounds_used}／#{plan.included_rounds}" : "—" %></td>
+            <td class="px-4 py-2 whitespace-nowrap"><%= plan ? "#{row.months_with_extra} 個月" : "—" %></td>
+            <td class="px-4 py-2 whitespace-nowrap"><%= (t = row.last_ticket_at) ? "#{(@today - t.to_date).to_i} 日前" : "未有" %></td>
+            <td class="px-4 py-2">
+              <span class="inline-block rounded-full px-2 py-0.5 text-xs font-medium <%= row.signal_classes %>"><%= row.signal_label %></span>
+              <% if row.signal == :notice %><span class="text-xs text-slate-500 ml-1"><%= plan.ends_on %> 完結</span><% end %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+  <p class="text-xs text-slate-500 mt-3">「用量偏低」：簽咗 60 日以上，但最近 60 日冇開過修改 ticket。「經常超出」：近 3 個月有 2 個月或以上要收額外輪數。</p>
+<% end %>

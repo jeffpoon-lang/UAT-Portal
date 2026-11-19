@@ -18,6 +18,9 @@
         <%= link_to "報問題／要求改動", new_portal_project_ticket_path(@project), class: "rounded-lg bg-indigo-600 px-4 py-2 text-sm text-white hover:bg-indigo-700" %>
       <% end %>
     </div>
+    <% if (plan = @project.client.retainer_plan)&.active_on?(Date.current) %>
+      <div class="mb-3"><%= render "shared/retainer_usage", plan: plan, today: Date.current %></div>
+    <% end %>
     <% if @project.tickets.empty? %>
       <p class="text-sm text-slate-500">未有 ticket。</p>
     <% else %>

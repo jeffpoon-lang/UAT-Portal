@@ -12,6 +12,9 @@ class MaintenanceReport
 
   def tickets = Ticket.joins(:project).where(projects: { client_id: client.id })
 
+  def plan = client.retainer_plan
+  def monthly_update = MonthlyUpdate.for(client, month)
+
   def opened = tickets.where(created_at: time_range).order(:created_at)
   def resolved = tickets.where(resolved_at: time_range).order(:resolved_at)
   def still_open = tickets.unresolved.where(created_at: ..time_range.end).order(:created_at)

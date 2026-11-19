@@ -1,0 +1,25 @@
+<%# plan, namespace（:admin 或 :portal） %>
+<% done, total = plan.handover_progress %>
+<section aria-labelledby="handover-heading">
+  <h3 id="handover-heading" class="font-semibold mb-1">交接清單 <span class="text-sm font-normal text-slate-500">（完成 <%= done %>／<%= total %>）</span></h3>
+  <% %w[provider client].each do |side| %>
+    <% items = plan.handover_items.select { |i| i.side == side } %>
+    <% next if items.empty? %>
+    <p class="text-xs uppercase tracking-wide text-slate-500 mt-3 mb-1"><%= HandoverItem::SIDE_LABELS[side] %></p>
+    <ul class="space-y-1">
+      <% items.each do |item| %>
+        <li class="flex items-center gap-3 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm">
+          <% if item.editable_by?(Current.user) %>
+            <%= button_to url_for([ namespace, item ]), method: :patch, params: { done: item.done? ? "0" : "1" }, form_class: "contents",
+                  class: "h-5 w-5 shrink-0 rounded border #{item.done? ? "bg-emerald-600 border-emerald-600 text-white" : "border-slate-400 bg-white"} cursor-pointer text-xs leading-none",
+                  "aria-label": item.done? ? "取消剔選：#{item.title}" : "剔選完成：#{item.title}" do %><%= "✓" if item.done? %><% end %>
+          <% else %>
+            <span class="h-5 w-5 shrink-0 rounded border text-xs leading-5 text-center <%= item.done? ? "bg-emerald-600 border-emerald-600 text-white" : "border-slate-300 bg-slate-50" %>" aria-hidden="true"><%= "✓" if item.done? %></span>
+          <% end %>
+          <span class="<%= "text-slate-500 line-through" if item.done? %>"><%= item.title %></span>
+          <% if item.done? %><span class="ml-auto text-xs text-slate-500 whitespace-nowrap"><%= item.done_at.in_time_zone("Europe/London").strftime("%m-%d") %></span><% end %>
+        </li>
+      <% end %>
+    </ul>
+  <% end %>
+</section>
