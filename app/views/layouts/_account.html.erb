@@ -1,0 +1,7 @@
+<div class="flex items-center gap-2.5 px-2.5 py-1.5 text-sm text-fg-muted">
+  <%= icon("user", class: "size-4 shrink-0 text-fg-subtle") %>
+  <span class="truncate" title="<%= Current.user.email_address %>"><%= Current.user.email_address %></span>
+</div>
+<%= button_to session_path, method: :delete, class: "nav-item w-full cursor-pointer", form_class: "contents" do %>
+  <%= icon("log-out") %><span>登出</span>
+<% end %>

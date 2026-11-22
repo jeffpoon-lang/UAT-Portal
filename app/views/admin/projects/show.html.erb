@@ -1,95 +1,94 @@
-<% content_for :title, @project.name %>
-<div class="flex items-start justify-between mb-6 gap-4">
-  <div>
-    <h1 class="text-2xl font-semibold"><%= @project.name %></h1>
-    <p class="text-sm text-slate-500">
-      <%= link_to @project.client.name, admin_client_path(@project.client), class: "hover:underline" %>
-      · UAT 包 <%= @project.max_uat_rounds %> round
-      <% if @project.maintenance_start_on %> · Maintenance 由 <%= @project.maintenance_start_on.strftime("%Y-%m-%d") %> 起<% end %>
-    </p>
-  </div>
-  <%= link_to "改 project", edit_admin_project_path(@project), class: "shrink-0 rounded-lg border border-slate-300 px-4 py-2 text-sm hover:bg-white" %>
-</div>
-
-<div class="mb-8"><%= render "shared/phase_progress", project: @project %></div>
-
-<section class="mb-10" aria-labelledby="uat-heading">
-  <div class="flex flex-wrap items-center justify-between gap-3 mb-3">
-    <h2 id="uat-heading" class="text-lg font-semibold">UAT（已用 <%= @project.uat_rounds.size %>／<%= @project.allowed_uat_rounds %> round）</h2>
-    <% if (reason = @project.cannot_open_round_reason) %>
-      <span class="text-sm text-slate-500"><%= reason %></span>
-    <% else %>
-      <%= button_to "開 Round #{@project.uat_rounds.size + 1}", admin_project_uat_rounds_path(@project), class: "rounded-lg bg-indigo-600 px-4 py-2 text-sm text-white hover:bg-indigo-700 cursor-pointer" %>
-    <% end %>
-  </div>
-  <% if @project.uat_rounds.empty? %>
-    <p class="text-sm text-slate-500">未開過 round。加齊 test case 之後開 Round 1，客戶就可以喺 portal 開始測試。</p>
-  <% else %>
-    <ul class="space-y-2">
-      <% @project.uat_rounds.each do |r| %>
-        <li class="rounded-lg bg-white border border-slate-200 px-4 py-3 flex flex-wrap items-center justify-between gap-2">
-          <%= link_to "Round #{r.number}", admin_project_uat_round_path(@project, r), class: "font-medium text-indigo-700 hover:underline" %>
-          <%= render "shared/round_counts", round: r %>
-          <span class="text-xs text-slate-500">
-            <%= { "open" => "客戶測試中", "changes_requested" => "要修正", "signed_off" => "已簽署" }[r.status] %>
-            <% if r.sign_off %> · <%= link_to r.sign_off.doc_number, admin_sign_off_path(r.sign_off), class: "text-indigo-700 underline" %><% end %>
-          </span>
-        </li>
-      <% end %>
-    </ul>
-  <% end %>
-
-  <div class="flex items-center justify-between mt-6 mb-2">
-    <h3 class="font-semibold">Change requests</h3>
-    <%= link_to "開 CR", new_admin_project_change_request_path(@project), class: "rounded-lg border border-slate-300 px-3 py-1.5 text-sm hover:bg-white" %>
-  </div>
-  <% if @project.change_requests.empty? %>
-    <p class="text-sm text-slate-500">冇 CR。</p>
-  <% else %>
-    <ul class="space-y-2">
-      <% @project.change_requests.each do |cr| %>
-        <li class="rounded-lg bg-white border border-slate-200 px-4 py-3">
-          <div class="flex flex-wrap items-center justify-between gap-2">
-            <span class="font-mono text-sm"><%= cr.doc_number %></span>
-            <span class="text-xs text-slate-600">+<%= cr.extra_rounds %> round<% if cr.quote_hkd %> · HK$<%= number_with_delimiter(cr.quote_hkd) %><% end %></span>
-            <% if cr.status_pending? %>
-              <span class="flex gap-2">
-                <%= button_to "批核", approve_admin_project_change_request_path(@project, cr), class: "rounded-md bg-emerald-600 px-3 py-1 text-xs text-white cursor-pointer" %>
-                <%= button_to "拒絕", reject_admin_project_change_request_path(@project, cr), class: "rounded-md border border-slate-300 px-3 py-1 text-xs cursor-pointer" %>
-              </span>
-            <% else %>
-              <span class="text-xs <%= cr.status_approved? ? "text-emerald-700" : "text-slate-500" %>"><%= cr.status_approved? ? "已批核" : "已拒絕" %></span>
-            <% end %>
-          </div>
-          <p class="text-sm text-slate-600 mt-1"><%= cr.description %></p>
-        </li>
-      <% end %>
-    </ul>
-  <% end %>
-</section>
-
-<div class="flex items-center justify-between mb-3">
-  <h2 class="text-lg font-semibold">Test cases（<%= @project.test_cases.size %>）</h2>
-  <%= link_to "加 test case", new_admin_project_test_case_path(@project), class: "rounded-lg bg-indigo-600 px-4 py-2 text-sm text-white hover:bg-indigo-700" %>
-</div>
-<% if @project.test_cases.empty? %>
-  <p class="text-slate-500 text-sm">未有 test case。SOP 要求客最少交 10 條。</p>
-<% else %>
-  <table class="w-full bg-white rounded-xl border border-slate-200 text-sm">
-    <thead class="text-left text-slate-500"><tr><th class="px-4 py-2">編號</th><th class="px-4 py-2">標題</th><th class="px-4 py-2">預期結果</th><th class="px-4 py-2">來源</th><th></th></tr></thead>
-    <tbody>
-      <% @project.test_cases.each do |tc| %>
-        <tr class="border-t border-slate-100 align-top">
-          <td class="px-4 py-2 font-mono"><%= tc.code %></td>
-          <td class="px-4 py-2"><%= tc.title %></td>
-          <td class="px-4 py-2 text-slate-600"><%= tc.expected %></td>
-          <td class="px-4 py-2 uppercase text-xs"><%= tc.source %></td>
-          <td class="px-4 py-2 text-right whitespace-nowrap">
-            <%= link_to "改", edit_admin_project_test_case_path(@project, tc), class: "text-indigo-700 hover:underline" %>
-            <%= button_to "刪", admin_project_test_case_path(@project, tc), method: :delete, form_class: "inline ml-2", class: "text-red-700 hover:underline cursor-pointer", data: { turbo_confirm: "確定刪 #{tc.code}？" } %>
-          </td>
-        </tr>
-      <% end %>
-    </tbody>
-  </table>
+<% subtitle = capture do %>
+  <%= link_to @project.client.name, admin_client_path(@project.client), class: "link" %>
+  · UAT 包 <%= @project.max_uat_rounds %> round
+  <% if @project.maintenance_start_on %> · Maintenance 由 <%= @project.maintenance_start_on.strftime("%Y-%m-%d") %> 起<% end %>
 <% end %>
+<%= page_header @project.name, subtitle: subtitle, crumbs: [ [ "Projects", admin_projects_path ] ] do %>
+  <%= link_to edit_admin_project_path(@project), class: "btn btn-secondary" do %><%= icon("pencil") %>改 project<% end %>
+<% end %>
+
+<div class="card card-body mb-8"><%= render "shared/phase_progress", project: @project, full: true %></div>
+
+<div class="grid gap-8 lg:grid-cols-3">
+  <div class="space-y-8 lg:col-span-2">
+    <section aria-labelledby="uat-heading">
+      <div class="mb-3 flex flex-wrap items-center justify-between gap-3">
+        <h2 id="uat-heading" class="section-title">UAT <span class="ml-1 text-sm font-normal text-fg-subtle tabular">已用 <%= @project.uat_rounds.size %>／<%= @project.allowed_uat_rounds %> round</span></h2>
+        <% if (reason = @project.cannot_open_round_reason) %>
+          <span class="text-sm text-fg-subtle"><%= reason %></span>
+        <% else %>
+          <%= button_to admin_project_uat_rounds_path(@project), class: "btn btn-primary btn-sm" do %><%= icon("plus") %>開 Round <%= @project.uat_rounds.size + 1 %><% end %>
+        <% end %>
+      </div>
+      <% if @project.uat_rounds.empty? %>
+        <%= empty_state("未開過 round", icon: "file-check-2", body: "加齊 test case 之後開 Round 1，客戶就可以喺 portal 開始測試。") %>
+      <% else %>
+        <div class="list">
+          <% @project.uat_rounds.each do |r| %>
+            <%= render "shared/round_row", round: r, href: admin_project_uat_round_path(@project, r), audience: :admin %>
+          <% end %>
+        </div>
+      <% end %>
+    </section>
+
+    <section aria-labelledby="cases-heading">
+      <div class="mb-3 flex flex-wrap items-center justify-between gap-3">
+        <h2 id="cases-heading" class="section-title">Test cases <span class="ml-1 text-sm font-normal text-fg-subtle tabular"><%= @project.test_cases.size %> 條</span></h2>
+        <%= link_to new_admin_project_test_case_path(@project), class: "btn btn-secondary btn-sm" do %><%= icon("plus") %>加 test case<% end %>
+      </div>
+      <% if @project.test_cases.empty? %>
+        <%= empty_state("未有 test case", icon: "file-text", body: "SOP 要求客最少交 10 條。") %>
+      <% else %>
+        <div class="table-wrap">
+          <table class="table">
+            <thead><tr><th>編號</th><th>標題</th><th>預期結果</th><th>來源</th><th><span class="sr-only">操作</span></th></tr></thead>
+            <tbody>
+              <% @project.test_cases.each do |tc| %>
+                <tr>
+                  <td><span class="code-chip"><%= tc.code %></span></td>
+                  <td class="min-w-48 font-medium"><%= tc.title %></td>
+                  <td class="min-w-48 text-fg-muted"><%= tc.expected %></td>
+                  <td><%= badge(tc.source.upcase, :neutral) %></td>
+                  <td class="text-right whitespace-nowrap">
+                    <%= link_to edit_admin_project_test_case_path(@project, tc), class: "btn btn-ghost btn-sm btn-icon", "aria-label": "改 #{tc.code}" do %><%= icon("pencil") %><% end %>
+                    <%= button_to admin_project_test_case_path(@project, tc), method: :delete, form_class: "inline", class: "btn btn-ghost btn-sm btn-icon hover:text-red-700",
+                          "aria-label": "刪 #{tc.code}", data: { turbo_confirm: "確定刪 #{tc.code}？" } do %><%= icon("trash-2") %><% end %>
+                  </td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
+      <% end %>
+    </section>
+  </div>
+
+  <aside aria-labelledby="change-requests">
+    <div class="mb-3 flex items-center justify-between gap-3">
+      <h2 id="change-requests" class="section-title">Change requests</h2>
+      <%= link_to new_admin_project_change_request_path(@project), class: "btn btn-secondary btn-sm" do %><%= icon("plus") %>開 CR<% end %>
+    </div>
+    <% if @project.change_requests.empty? %>
+      <p class="rounded-xl border border-dashed border-line-strong px-4 py-6 text-center text-sm text-fg-subtle">冇 CR。超出 round 數或者改需求先要開。</p>
+    <% else %>
+      <ul class="list">
+        <% @project.change_requests.each do |cr| %>
+          <li class="px-4 py-3">
+            <div class="flex flex-wrap items-center gap-2">
+              <span class="code-chip"><%= cr.doc_number %></span>
+              <%= badge({ "pending" => "待批", "approved" => "已批核", "rejected" => "已拒絕" }[cr.status], UiHelper::CR_TONES.fetch(cr.status)) %>
+            </div>
+            <p class="mt-2 text-sm text-fg"><%= cr.description %></p>
+            <p class="mt-1 text-xs text-fg-subtle tabular">+<%= cr.extra_rounds %> round<% if cr.quote_hkd %> · <%= hkd(cr.quote_hkd) %><% end %></p>
+            <% if cr.status_pending? %>
+              <div class="mt-3 flex gap-2">
+                <%= button_to approve_admin_project_change_request_path(@project, cr), class: "btn btn-success btn-sm" do %><%= icon("check") %>批核<% end %>
+                <%= button_to "拒絕", reject_admin_project_change_request_path(@project, cr), class: "btn btn-secondary btn-sm" %>
+              </div>
+            <% end %>
+          </li>
+        <% end %>
+      </ul>
+    <% end %>
+  </aside>
+</div>

@@ -1,16 +1,16 @@
-<%# plan, today %>
+<%# locals: (plan:, today:, framed: true) -%>
 <% used = plan.rounds_used(today) %>
-<div class="rounded-xl bg-white border border-slate-200 p-4">
-  <div class="flex flex-wrap items-baseline justify-between gap-2 mb-2">
-    <span class="text-sm text-slate-500"><%= today.strftime("%Y 年 %-m 月") %>修改輪數</span>
-    <span class="text-sm"><strong class="text-lg"><%= used %></strong> ／ <%= plan.included_rounds %> 輪</span>
+<div class="<%= framed ? "card card-body" : "rounded-lg border border-line bg-canvas p-4" %>">
+  <div class="flex flex-wrap items-baseline justify-between gap-2">
+    <span class="text-sm font-medium text-fg"><%= today.strftime("%Y 年 %-m 月") %>修改輪數</span>
+    <span class="text-sm text-fg-muted tabular"><strong class="text-lg font-semibold text-fg"><%= used %></strong> ／ <%= plan.included_rounds %> 輪</span>
   </div>
-  <div class="h-2 rounded-full bg-slate-100 overflow-hidden" role="progressbar" aria-valuemin="0" aria-valuemax="<%= plan.included_rounds %>" aria-valuenow="<%= used %>" aria-label="本月修改輪數">
-    <div class="h-2 <%= used > plan.included_rounds ? "bg-amber-500" : "bg-indigo-600" %>" style="width: <%= plan.included_rounds.zero? ? 100 : [ used * 100 / plan.included_rounds, 100 ].min %>%"></div>
+  <div class="progress mt-3" role="progressbar" aria-valuemin="0" aria-valuemax="<%= plan.included_rounds %>" aria-valuenow="<%= used %>" aria-label="本月修改輪數">
+    <div class="progress-bar <%= "bg-amber-500" if used > plan.included_rounds %>" style="width: <%= percent(used, plan.included_rounds) %>%"></div>
   </div>
   <% if (extra = plan.extra_rounds(today)).positive? %>
-    <p class="text-xs text-amber-800 mt-2">本月額外 <%= extra %> 輪，共 <%= hkd(plan.extra_amount_hkd(today)) %>，下個月月費單一併結算</p>
+    <p class="mt-2.5 text-xs text-amber-800">本月額外 <%= extra %> 輪，共 <%= hkd(plan.extra_amount_hkd(today)) %>，下個月月費單一併結算</p>
   <% else %>
-    <p class="text-xs text-slate-500 mt-2">系統故障唔計輪數。用晒之後每輪另收 <%= hkd(plan.extra_round_hkd) %>。</p>
+    <p class="mt-2.5 text-xs text-fg-subtle">系統故障唔計輪數。用晒之後每輪另收 <%= hkd(plan.extra_round_hkd) %>。</p>
   <% end %>
 </div>

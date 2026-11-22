@@ -1,15 +1,17 @@
 <% content_for :title, "UAT Round #{@round.number} · #{@project.name}" %>
-<p class="text-sm text-slate-500 mb-1"><%= link_to @project.name, portal_project_path(@project), class: "hover:underline" %></p>
-<div class="flex flex-wrap items-baseline justify-between gap-2 mb-6">
-  <h1 class="text-2xl font-semibold">UAT Round <%= @round.number %><span class="text-base font-normal text-slate-500">／<%= @project.allowed_uat_rounds %></span></h1>
-  <div id="round-counts"><%= render "shared/round_counts", round: @round %></div>
+<%= page_header "UAT Round #{@round.number}／#{@project.allowed_uat_rounds}", subtitle: round_status_badge(@round, :client),
+      crumbs: [ [ @project.name, portal_project_path(@project) ] ] %>
+
+<div class="sticky top-14 z-20 -mx-4 mb-6 border-b border-line bg-canvas/95 px-4 py-3 backdrop-blur sm:mx-0 sm:rounded-xl sm:border sm:bg-surface/95 sm:px-5 sm:shadow-card">
+  <%# id 俾 Portal::TestResultsController 嘅 turbo stream 用，唔好改 %>
+  <div id="round-counts"><%= render "portal/uat_rounds/progress", round: @round %></div>
 </div>
 
 <% if @round.status_open? %>
-  <p class="mb-4 text-sm text-slate-600">逐條試，揀 Pass、Fail 或者測唔到，有問題寫低同上載截圖，每條撳「儲存」。</p>
+  <%= callout(:info, css: "mb-6") do %>逐條試，揀 Pass、Fail 或者測唔到；有問題就寫低同加截圖，每條撳「儲存」。<% end %>
 <% end %>
 
-<div class="space-y-3 mb-8">
+<div class="mb-8 space-y-4">
   <% @round.test_results.each do |result| %>
     <%= render "portal/test_results/result", result: result %>
   <% end %>

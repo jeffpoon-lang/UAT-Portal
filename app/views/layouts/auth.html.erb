@@ -1,0 +1,10 @@
+<% content_for :shell do %>
+  <main id="main" class="flex min-h-screen flex-col items-center px-4 py-12 sm:justify-center">
+    <div class="mb-8 flex items-center gap-2.5"><%= render "layouts/brand" %></div>
+    <div class="card w-full max-w-sm p-6 sm:p-8">
+      <%= yield %>
+    </div>
+    <p class="mt-6 text-center text-xs text-fg-subtle">UAT 驗收 · Sign-off · 月費維護</p>
+  </main>
+<% end %>
+<%= render template: "layouts/application" %>

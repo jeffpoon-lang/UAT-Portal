@@ -2,14 +2,14 @@
 class RetentionRow
   LOW_USAGE_DAYS = 60
 
-  # 訊號 => [ 標籤, 顏色 ]；次序 = 嚴重程度
+  # 訊號 => [ 標籤, 色調 ]；次序 = 嚴重程度
   SIGNALS = {
-    ended: [ "已完約", "bg-slate-100 text-slate-700" ],
-    notice: [ "已通知終止", "bg-red-100 text-red-800" ],
-    no_plan: [ "已上線但未有 retainer", "bg-amber-100 text-amber-800" ],
-    upsell: [ "經常超出，可建議升級", "bg-indigo-100 text-indigo-800" ],
-    low_usage: [ "用量偏低，主動約傾", "bg-amber-100 text-amber-800" ],
-    healthy: [ "正常", "bg-emerald-100 text-emerald-800" ]
+    ended: [ "已完約", :neutral ],
+    notice: [ "已通知終止", :danger ],
+    no_plan: [ "已上線但未有 retainer", :warning ],
+    upsell: [ "經常超出，可建議升級", :accent ],
+    low_usage: [ "用量偏低，主動約傾", :warning ],
+    healthy: [ "正常", :success ]
   }.freeze
 
   attr_reader :client, :today
@@ -51,7 +51,7 @@ class RetentionRow
   end
 
   def signal_label = SIGNALS.fetch(signal).first
-  def signal_classes = SIGNALS.fetch(signal).last
+  def signal_tone = SIGNALS.fetch(signal).last
 
   # 簽咗超過 60 日，但 60 日內冇開過修改 ticket
   def low_usage?

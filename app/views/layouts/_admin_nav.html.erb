@@ -1,0 +1,23 @@
+<%# locals: (drawer: false) -%>
+<% @unresolved_ticket_count ||= Ticket.unresolved.count %>
+<div class="flex h-full flex-col">
+  <div class="flex h-14 shrink-0 items-center gap-2.5 border-b border-line px-4">
+    <%= link_to admin_root_path, class: "flex items-center gap-2.5" do %><%= render "layouts/brand" %><% end %>
+    <% if drawer %>
+      <button type="button" class="btn btn-ghost btn-icon btn-sm ml-auto" data-action="drawer#close"><%= icon("x", class: "size-5", label: "關閉選單") %></button>
+    <% end %>
+  </div>
+  <nav class="flex-1 overflow-y-auto px-3 pb-4" aria-label="主選單">
+    <% admin_nav_sections.each do |section, items| %>
+      <p class="nav-section"><%= section %></p>
+      <ul class="space-y-0.5">
+        <% items.each do |item| %>
+          <li><%= nav_link(item, count: (@unresolved_ticket_count if item.match.include?("admin/tickets"))) %></li>
+        <% end %>
+      </ul>
+    <% end %>
+  </nav>
+  <div class="shrink-0 space-y-0.5 border-t border-line p-3">
+    <%= render "layouts/account" %>
+  </div>
+</div>

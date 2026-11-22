@@ -1,3 +1,8 @@
 <% content_for :title, @sign_off.doc_number %>
-<p class="text-sm text-slate-500 mb-4"><%= link_to "← Sign-off 記錄", admin_sign_offs_path, class: "hover:underline" %></p>
-<%= render "shared/sign_off_certificate", sign_off: @sign_off %>
+<div class="mb-6 flex flex-wrap items-center justify-between gap-3" data-print="hide" data-controller="print">
+  <%= link_to admin_sign_offs_path, class: "btn btn-ghost -ml-2" do %><%= icon("arrow-left") %>Sign-off 記錄<% end %>
+  <button type="button" class="btn btn-secondary" data-action="print#print"><%= icon("printer") %>列印／存 PDF</button>
+</div>
+<div class="mx-auto max-w-3xl">
+  <%= render "shared/sign_off_certificate", sign_off: @sign_off %>
+</div>

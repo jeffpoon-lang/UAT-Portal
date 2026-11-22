@@ -1,0 +1,13 @@
+<%# notice 會自己消失；alert 要撳走 %>
+<div class="toast-region" id="flash">
+  <% flash.each do |type, message| %>
+    <% next unless %w[notice alert].include?(type) && message.is_a?(String) %>
+    <div class="toast toast-<%= type %>" role="<%= type == "alert" ? "alert" : "status" %>" data-turbo-temporary
+         data-controller="flash" data-flash-autohide-value="<%= type == "notice" %>"
+         data-action="mouseenter->flash#pause focusin->flash#pause">
+      <%= icon(type == "alert" ? "circle-alert" : "circle-check") %>
+      <p class="flex-1"><%= message %></p>
+      <button type="button" class="toast-close" data-action="flash#dismiss"><%= icon("x", label: "關閉") %></button>
+    </div>
+  <% end %>
+</div>

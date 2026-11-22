@@ -1,0 +1,11 @@
+<%# locals: (project:, href:, show_client: false, extra: nil) -%>
+<%= link_to href, class: "card card-link card-body" do %>
+  <div class="mb-5 flex items-start justify-between gap-3">
+    <div class="min-w-0">
+      <p class="font-medium text-fg"><%= project.name %></p>
+      <% if show_client %><p class="mt-0.5 truncate text-sm text-fg-subtle"><%= project.client.name %></p><% end %>
+    </div>
+    <%= extra %>
+  </div>
+  <%= render "shared/phase_progress", project: project %>
+<% end %>

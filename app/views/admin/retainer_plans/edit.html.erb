@@ -1,4 +1,2 @@
-<% content_for :title, "改 retainer" %>
-<p class="text-sm text-slate-500 mb-1"><%= link_to @client.name, admin_client_path(@client), class: "hover:underline" %></p>
-<h1 class="text-2xl font-semibold mb-6">改月費維護（retainer）</h1>
+<%= page_header "改月費維護", crumbs: [ [ "客戶", admin_clients_path ], [ @client.name, admin_client_path(@client) ] ] %>
 <%= render "form", plan: @plan, client: @client %>

@@ -17,7 +17,7 @@ class Portal::TestResultsController < Portal::BaseController
       format.turbo_stream do
         render turbo_stream: [
           turbo_stream.replace(helpers.dom_id(@result), partial: "portal/test_results/result", locals: { result: @result, saved: saved }),
-          turbo_stream.update("round-counts", partial: "shared/round_counts", locals: { round: @round }),
+          turbo_stream.update("round-counts", partial: "portal/uat_rounds/progress", locals: { round: @round }),
           turbo_stream.replace("round-submit", partial: "portal/uat_rounds/submit", locals: { round: @round, project: @project })
         ], status: saved ? :ok : :unprocessable_entity
       end

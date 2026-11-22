@@ -1,27 +1,34 @@
 <% content_for :title, @ticket.doc_number %>
-<p class="text-sm text-slate-500 mb-4"><%= link_to "← Tickets", admin_tickets_path, class: "hover:underline" %> · <%= @ticket.project.client.name %></p>
-<%= render "shared/ticket_detail", ticket: @ticket %>
+<% subtitle = capture do %><span class="code-chip"><%= @ticket.doc_number %></span> <span class="ml-1"><%= @ticket.project.client.name %></span><% end %>
+<%= page_header @ticket.title, subtitle: subtitle, crumbs: [ [ "Tickets", admin_tickets_path ] ] %>
 
-<div class="grid gap-6 md:grid-cols-2">
-  <%= form_with model: [ :admin, @ticket, @log ], url: admin_ticket_logs_path(@ticket), class: "space-y-3 bg-white rounded-xl border border-slate-200 p-5" do |f| %>
-    <h2 class="font-semibold">記錄處理</h2>
-    <%= render "shared/errors", record: @log %>
-    <div class="flex gap-3">
-      <div><%= f.label :logged_on, "日期", class: "block text-sm mb-1" %><%= f.date_field :logged_on, class: "rounded-lg border-slate-300" %></div>
-      <div><%= f.label :minutes, "分鐘", class: "block text-sm mb-1" %><%= f.number_field :minutes, min: 0, step: 5, class: "w-24 rounded-lg border-slate-300" %></div>
-    </div>
-    <div><%= f.label :note, "做咗咩（客戶睇得到）", class: "block text-sm mb-1" %><%= f.text_area :note, rows: 3, class: "w-full rounded-lg border-slate-300" %></div>
-    <%= f.submit "加記錄", class: "rounded-lg bg-indigo-600 px-4 py-2 text-sm text-white hover:bg-indigo-700 cursor-pointer" %>
-  <% end %>
+<div class="grid gap-8 lg:grid-cols-3">
+  <div class="lg:col-span-2">
+    <%= render "shared/ticket_detail", ticket: @ticket %>
+  </div>
 
-  <%= form_with model: [ :admin, @ticket ], method: :patch, class: "space-y-3 bg-white rounded-xl border border-slate-200 p-5" do |f| %>
-    <h2 class="font-semibold">狀態</h2>
-    <div><%= f.label :status, "狀態", class: "block text-sm mb-1" %><%= f.select :status, Ticket::STATUS_LABELS.map { |k, v| [ v, k ] }, {}, class: "w-full rounded-lg border-slate-300" %></div>
-    <div>
-      <%= f.label :kind, "類別", class: "block text-sm mb-1" %><%= f.select :kind, Ticket::KIND_LABELS.map { |k, v| [ v, k ] }, {}, class: "w-full rounded-lg border-slate-300" %>
-      <p class="text-xs text-slate-500 mt-1">改做「系統故障」唔計 retainer 輪數，亦唔收額外費用</p>
-    </div>
-    <div><%= f.label :priority, "優先度", class: "block text-sm mb-1" %><%= f.select :priority, Ticket::PRIORITY_LABELS.map { |k, v| [ v, k ] }, {}, class: "w-full rounded-lg border-slate-300" %></div>
-    <%= f.submit "更新", class: "rounded-lg border border-slate-300 px-4 py-2 text-sm hover:bg-slate-50 cursor-pointer" %>
-  <% end %>
+  <div class="space-y-6">
+    <%= form_with model: [ :admin, @ticket, @log ], url: admin_ticket_logs_path(@ticket), class: "card" do |f| %>
+      <div class="card-header"><h2 class="section-title">記錄處理</h2></div>
+      <div class="card-body space-y-4">
+        <%= render "shared/errors", record: @log %>
+        <div class="grid grid-cols-2 gap-3">
+          <%= f.field :logged_on, "日期" do %><%= f.date_field :logged_on %><% end %>
+          <%= f.field :minutes, "分鐘" do %><%= f.number_field :minutes, min: 0, step: 5 %><% end %>
+        </div>
+        <%= f.field :note, "做咗咩", hint: "客戶睇得到" do %><%= f.text_area :note, rows: 3 %><% end %>
+        <%= f.submit "加記錄" %>
+      </div>
+    <% end %>
+
+    <%= form_with model: [ :admin, @ticket ], method: :patch, class: "card" do |f| %>
+      <div class="card-header"><h2 class="section-title">狀態</h2></div>
+      <div class="card-body space-y-4">
+        <%= f.field :status, "狀態" do %><%= f.select :status, Ticket::STATUS_LABELS.map { |k, v| [ v, k ] } %><% end %>
+        <%= f.field :kind, "類別", hint: "改做「系統故障」唔計 retainer 輪數，亦唔收額外費用" do %><%= f.select :kind, Ticket::KIND_LABELS.map { |k, v| [ v, k ] } %><% end %>
+        <%= f.field :priority, "優先度" do %><%= f.select :priority, Ticket::PRIORITY_LABELS.map { |k, v| [ v, k ] } %><% end %>
+        <%= f.submit "更新", class: "btn btn-secondary" %>
+      </div>
+    <% end %>
+  </div>
 </div>

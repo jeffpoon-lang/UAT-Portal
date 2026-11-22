@@ -1,0 +1,28 @@
+<% content_for :shell do %>
+  <div class="app-shell min-h-screen lg:grid lg:grid-cols-[15rem_minmax(0,1fr)]" data-controller="drawer">
+    <aside class="app-sidebar hidden border-r border-line bg-surface lg:block">
+      <div class="sticky top-0 h-screen"><%= render "layouts/admin_nav" %></div>
+    </aside>
+
+    <div class="min-w-0">
+      <header class="app-topbar sticky top-0 z-30 flex h-14 items-center gap-2 border-b border-line bg-surface/90 px-3 backdrop-blur lg:hidden">
+        <button type="button" class="btn btn-ghost btn-icon" data-action="drawer#open" data-drawer-target="button"
+                aria-controls="admin-drawer" aria-expanded="false">
+          <%= icon("menu", class: "size-5", label: "打開選單") %>
+        </button>
+        <%= link_to admin_root_path, class: "flex items-center gap-2.5" do %><%= render "layouts/brand" %><% end %>
+      </header>
+
+      <main id="main" class="app-main mx-auto max-w-6xl px-4 py-6 sm:px-6 lg:px-10 lg:py-10">
+        <%= yield %>
+      </main>
+    </div>
+
+    <dialog id="admin-drawer" aria-label="主選單" data-drawer-target="dialog"
+            data-action="click->drawer#backdropClose close->drawer#closed"
+            class="fixed inset-y-0 left-0 m-0 h-dvh max-h-none w-72 max-w-[85vw] border-r border-line bg-surface p-0 shadow-pop lg:hidden">
+      <%= render "layouts/admin_nav", drawer: true %>
+    </dialog>
+  </div>
+<% end %>
+<%= render template: "layouts/application" %>

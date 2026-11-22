@@ -1,0 +1,13 @@
+<%# locals: (ticket:, href:, show_client: false) -%>
+<%= link_to href, class: "list-row" do %>
+  <div class="min-w-0 flex-1 basis-60">
+    <p class="flex items-baseline gap-2">
+      <span class="code-chip shrink-0"><%= ticket.doc_number %></span>
+      <span class="font-medium text-fg"><%= ticket.title %></span>
+    </p>
+    <p class="mt-1 text-xs text-fg-subtle">
+      <% if show_client %><%= ticket.project.client.name %> · <%= ticket.project.name %> · <% end %><%= time_ago_zh(ticket.created_at) %>
+    </p>
+  </div>
+  <div class="flex flex-wrap gap-1.5"><%= ticket_badges(ticket) %></div>
+<% end %>

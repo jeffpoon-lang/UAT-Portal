@@ -1,37 +1,65 @@
-<% content_for :title, "Dashboard" %>
-<div class="flex items-center justify-between mb-6">
-  <h1 class="text-2xl font-semibold">Dashboard</h1>
-  <%= link_to "新 project", new_admin_project_path, class: "rounded-lg bg-indigo-600 px-4 py-2 text-sm text-white hover:bg-indigo-700" %>
-</div>
+<%= page_header "Dashboard", subtitle: "所有 project 嘅進度，同要你跟進嘅事" do %>
+  <%= link_to new_admin_project_path, class: "btn btn-primary" do %><%= icon("plus") %>新 project<% end %>
+<% end %>
 
 <% unresolved = Ticket.unresolved.count %>
 <% if unresolved.positive? %>
-  <%= link_to admin_tickets_path, class: "block rounded-xl #{Ticket.unresolved.priority_urgent.exists? ? "bg-red-50 border-red-200" : "bg-amber-50 border-amber-200"} border px-4 py-3 mb-6 text-sm" do %>
-    有 <strong><%= unresolved %></strong> 張 maintenance ticket 未解決<% if (u = Ticket.unresolved.priority_urgent.count).positive? %>，其中 <strong><%= u %></strong> 張緊急<% end %> →
+  <% urgent = Ticket.unresolved.priority_urgent.count %>
+  <%= link_to admin_tickets_path, class: "callout #{urgent.positive? ? "callout-danger" : "callout-warning"} mb-6 items-center transition-shadow hover:shadow-card" do %>
+    <%= icon("life-buoy") %>
+    <span class="flex-1">有 <strong><%= unresolved %></strong> 張 maintenance ticket 未解決<% if urgent.positive? %>，其中 <strong><%= urgent %></strong> 張緊急<% end %></span>
+    <%= icon("arrow-right") %>
   <% end %>
 <% end %>
 
-<div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-2 mb-8">
-  <% Project::PHASES.each do |phase| %>
-    <div class="rounded-lg bg-white border border-slate-200 px-3 py-3">
-      <div class="text-xs text-slate-500"><%= Project::PHASE_LABELS[phase] %></div>
-      <div class="text-2xl font-semibold"><%= @counts[phase] || 0 %></div>
+<section class="mb-8" aria-labelledby="pipeline-heading">
+  <h2 id="pipeline-heading" class="sr-only">各階段 project 數目</h2>
+  <div class="card overflow-x-auto">
+    <ol class="grid min-w-[42rem] grid-cols-7 divide-x divide-line">
+      <% Project::PHASES.each do |phase| %>
+        <% n = @counts[phase] || 0 %>
+        <li class="px-4 py-3">
+          <p class="text-xs font-medium text-fg-subtle"><%= Project::PHASE_LABELS[phase] %></p>
+          <p class="mt-1 text-2xl font-semibold tracking-tight tabular <%= n.zero? ? "text-line-strong" : "text-fg" %>"><%= n %></p>
+        </li>
+      <% end %>
+    </ol>
+  </div>
+</section>
+
+<% if @pending_crs.any? || @rounds_to_fix.any? %>
+  <section class="mb-8" aria-labelledby="todo-heading">
+    <h2 id="todo-heading" class="section-title mb-3">等緊你</h2>
+    <div class="list">
+      <% @rounds_to_fix.each do |round| %>
+        <%= link_to admin_project_uat_round_path(round.project, round), class: "list-row" do %>
+          <%= badge("要修正", :warning) %>
+          <span class="min-w-0 flex-1"><span class="font-medium text-fg"><%= round.project.name %></span> <span class="text-fg-subtle">· Round <%= round.number %> 有 <%= round.failing_results.size %> 條唔 pass</span></span>
+          <%= icon("chevron-right", class: "size-4 text-fg-subtle") %>
+        <% end %>
+      <% end %>
+      <% @pending_crs.each do |cr| %>
+        <%= link_to admin_project_path(cr.project, anchor: "change-requests"), class: "list-row" do %>
+          <%= badge("CR 待批", :violet) %>
+          <span class="min-w-0 flex-1"><span class="font-medium text-fg"><%= cr.project.name %></span> <span class="text-fg-subtle">· <%= cr.description.truncate(40) %></span></span>
+          <%= icon("chevron-right", class: "size-4 text-fg-subtle") %>
+        <% end %>
+      <% end %>
+    </div>
+  </section>
+<% end %>
+
+<section aria-labelledby="projects-heading">
+  <h2 id="projects-heading" class="section-title mb-3">Projects</h2>
+  <% if @projects.empty? %>
+    <%= empty_state("未有 project", icon: "folder-kanban", body: "先加客戶，再開 project。") do %>
+      <%= link_to new_admin_client_path, class: "btn btn-primary" do %><%= icon("plus") %>加客戶<% end %>
+    <% end %>
+  <% else %>
+    <div class="grid gap-4 md:grid-cols-2">
+      <% @projects.each do |project| %>
+        <%= render "shared/project_card", project: project, href: admin_project_path(project), show_client: true %>
+      <% end %>
     </div>
   <% end %>
-</div>
-
-<% if @projects.empty? %>
-  <p class="text-slate-500">未有 project。先 <%= link_to "加客戶", new_admin_client_path, class: "text-indigo-700 underline" %>，再開 project。</p>
-<% else %>
-  <div class="space-y-4">
-    <% @projects.each do |project| %>
-      <%= link_to admin_project_path(project), class: "block rounded-xl bg-white border border-slate-200 p-4 hover:border-indigo-300" do %>
-        <div class="flex items-baseline justify-between mb-3">
-          <span class="font-medium"><%= project.name %></span>
-          <span class="text-sm text-slate-500"><%= project.client.name %></span>
-        </div>
-        <%= render "shared/phase_progress", project: project %>
-      <% end %>
-    <% end %>
-  </div>
-<% end %>
+</section>

@@ -1,19 +1,21 @@
-<%# 七個階段嘅進度條：已完成 = 實色，而家 = 加粗外框，未到 = 灰。
-    手機版只顯示幼條 + 而家階段名，避免七個字標擠爆。 %>
+<%# 七個交付階段。full: true 會喺 desktop 顯示每個階段個名 %>
+<%# locals: (project:, full: false) -%>
+<% current = project.phase_index %>
 <div>
-  <p class="sm:hidden text-xs text-slate-600 mb-1.5">
-    第 <%= project.phase_index + 1 %>／<%= Project::PHASES.size %> 步：<strong class="text-indigo-800"><%= project.phase_label %></strong>
-  </p>
+  <div class="mb-2 flex items-center justify-between gap-2 text-xs">
+    <span class="font-medium text-fg"><%= project.phase_label %></span>
+    <span class="text-fg-subtle tabular">第 <%= current + 1 %>／<%= Project::PHASES.size %> 步</span>
+  </div>
   <ol class="grid grid-cols-7 gap-1" aria-label="交付階段">
     <% Project::PHASES.each_with_index do |phase, i| %>
-      <% state = i < project.phase_index ? :done : (i == project.phase_index ? :current : :todo) %>
-      <li class="rounded-md text-center text-xs h-2 sm:h-auto sm:px-1 sm:py-2 overflow-hidden
-        <%= { done: "bg-indigo-600 text-white",
-              current: "bg-indigo-300 sm:bg-indigo-50 text-indigo-800 sm:ring-2 sm:ring-inset sm:ring-indigo-600 font-semibold",
-              todo: "bg-slate-200 sm:bg-slate-100 text-slate-500" }[state] %>"
-        <%= "aria-current=step" if state == :current %> title="<%= Project::PHASE_LABELS[phase] %>">
-        <span class="sr-only sm:not-sr-only"><%= Project::PHASE_LABELS[phase] %></span>
-      </li>
+      <% state = i < current ? "已完成" : (i == current ? "而家" : "未到") %>
+      <%= tag.li(aria: { current: (i == current ? "step" : nil) }) do %>
+        <span class="block h-1.5 rounded-full <%= i <= current ? "bg-accent" : "bg-line" %>"></span>
+        <% if full %>
+          <span class="mt-2 hidden truncate text-[11px] sm:block <%= i == current ? "font-semibold text-accent" : "text-fg-subtle" %>" aria-hidden="true"><%= Project::PHASE_LABELS[phase] %></span>
+        <% end %>
+        <span class="sr-only"><%= Project::PHASE_LABELS[phase] %>（<%= state %>）</span>
+      <% end %>
     <% end %>
   </ol>
 </div>

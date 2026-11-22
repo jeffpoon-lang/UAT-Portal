@@ -100,6 +100,7 @@ class RetainerTest < ActiveSupport::TestCase
   test "retention signals" do
     row = RetentionRow.new(client: @client, today: Date.current)
     assert_equal :healthy, row.signal
+    assert_equal :success, row.signal_tone
 
     music = clients(:music)
     projects(:music_app).update!(phase: :launch)
