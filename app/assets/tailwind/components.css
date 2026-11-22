@@ -1,0 +1,361 @@
+/* Shared components. Combine a base class with a modifier in markup
+   (class="btn btn-primary"). Tailwind utilities still override these,
+   e.g. class="btn btn-primary w-full". */
+@layer components {
+  /* ---------- Text ---------- */
+  .page-title {
+    @apply text-xl font-semibold tracking-tight text-fg sm:text-2xl;
+  }
+  .page-subtitle {
+    @apply mt-1 text-sm text-fg-muted;
+  }
+  .section-title {
+    @apply text-base font-semibold text-fg;
+  }
+  .eyebrow {
+    @apply text-xs font-medium uppercase tracking-wider text-fg-subtle;
+  }
+  .link {
+    @apply font-medium text-accent underline-offset-2 hover:underline;
+  }
+  .code-chip {
+    @apply rounded bg-subtle px-1.5 py-0.5 font-mono text-xs font-medium whitespace-nowrap text-fg-muted;
+  }
+  .prose-text {
+    @apply text-sm leading-relaxed whitespace-pre-line text-fg;
+  }
+
+  /* ---------- Buttons ---------- */
+  .btn {
+    @apply inline-flex h-9 cursor-pointer items-center justify-center gap-1.5 rounded-lg border border-transparent px-3.5 text-sm font-medium whitespace-nowrap transition-colors select-none disabled:cursor-not-allowed disabled:opacity-50;
+  }
+  .btn svg {
+    @apply size-4 shrink-0;
+  }
+  .btn-sm {
+    @apply h-8 px-2.5 text-[13px];
+  }
+  .btn-lg {
+    @apply h-11 px-5 text-base;
+  }
+  .btn-icon {
+    @apply w-9 px-0;
+  }
+  .btn-sm.btn-icon {
+    @apply w-8;
+  }
+  .btn-primary {
+    @apply bg-accent text-white shadow-card hover:bg-accent-hover;
+  }
+  .btn-secondary {
+    @apply border-line-strong bg-surface text-fg shadow-card hover:bg-subtle;
+  }
+  .btn-ghost {
+    @apply text-fg-muted hover:bg-subtle hover:text-fg;
+  }
+  .btn-success {
+    @apply bg-emerald-600 text-white shadow-card hover:bg-emerald-700;
+  }
+  .btn-danger {
+    @apply border-red-200 bg-surface text-red-700 shadow-card hover:bg-red-50;
+  }
+
+  /* ---------- Form fields ---------- */
+  .label {
+    @apply mb-1.5 block text-sm font-medium text-fg;
+  }
+  .label-optional {
+    @apply font-normal text-fg-subtle;
+  }
+  .hint {
+    @apply mt-1.5 text-xs text-fg-subtle;
+  }
+  .field-error {
+    @apply mt-1.5 text-xs font-medium text-red-700;
+  }
+
+  .input,
+  .select,
+  .textarea {
+    @apply block w-full rounded-lg border border-line-strong bg-surface px-3 text-base text-fg shadow-card transition-colors placeholder:text-fg-subtle focus:border-accent focus:ring-3 focus:ring-accent/20 focus:outline-none disabled:bg-subtle disabled:text-fg-subtle sm:text-sm;
+  }
+  .input,
+  .select {
+    @apply h-10 sm:h-9;
+  }
+  .textarea {
+    @apply py-2;
+  }
+  .select {
+    @apply appearance-none bg-no-repeat pr-9;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2371717a' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+    background-position: right 0.625rem center;
+    background-size: 1rem;
+  }
+  .input[aria-invalid="true"],
+  .select[aria-invalid="true"],
+  .textarea[aria-invalid="true"] {
+    @apply border-red-400 focus:border-red-500 focus:ring-red-500/20;
+  }
+
+  .input-group {
+    @apply flex items-stretch;
+  }
+  .input-group > .input-addon {
+    @apply inline-flex items-center rounded-l-lg border border-r-0 border-line-strong bg-subtle px-3 text-sm text-fg-subtle;
+  }
+  .input-group > .input {
+    @apply rounded-l-none;
+  }
+
+  .checkbox {
+    @apply size-4 shrink-0 cursor-pointer rounded border-line-strong;
+    accent-color: var(--color-accent);
+  }
+
+  /* A radio or checkbox inside a label, drawn as a pill */
+  .choice {
+    @apply relative flex min-h-11 cursor-pointer items-center justify-center gap-2 rounded-lg border border-line-strong bg-surface px-3 py-2 text-center text-sm font-medium text-fg-muted shadow-card transition-colors hover:bg-subtle;
+  }
+  .choice:has(:checked) {
+    @apply border-accent bg-accent-soft text-accent-fg ring-1 ring-accent;
+  }
+  .choice:has(:focus-visible) {
+    @apply outline-2 outline-offset-2 outline-accent;
+  }
+  .choice-pass:has(:checked) {
+    @apply border-emerald-600 bg-emerald-50 text-emerald-800 ring-emerald-600;
+  }
+  .choice-fail:has(:checked) {
+    @apply border-red-600 bg-red-50 text-red-800 ring-red-600;
+  }
+  .choice-blocked:has(:checked) {
+    @apply border-amber-500 bg-amber-50 text-amber-900 ring-amber-500;
+  }
+
+  .file-input {
+    @apply block w-full cursor-pointer text-sm text-fg-subtle file:mr-3 file:h-9 file:cursor-pointer file:rounded-lg file:border file:border-line-strong file:bg-surface file:px-3 file:text-sm file:font-medium file:text-fg file:shadow-card hover:file:bg-subtle;
+  }
+
+  /* ---------- Surfaces ---------- */
+  .card {
+    @apply rounded-xl border border-line bg-surface shadow-card;
+  }
+  .card-header {
+    @apply flex flex-wrap items-center justify-between gap-2 border-b border-line px-4 py-3 sm:px-5;
+  }
+  .card-body {
+    @apply p-4 sm:p-5;
+  }
+  .card-link {
+    @apply block transition hover:border-line-strong hover:shadow-pop;
+  }
+
+  .list {
+    @apply divide-y divide-line overflow-hidden rounded-xl border border-line bg-surface shadow-card;
+  }
+  .list-row {
+    @apply flex flex-wrap items-center gap-x-3 gap-y-1 px-4 py-3;
+  }
+  a.list-row {
+    @apply transition-colors hover:bg-canvas;
+  }
+
+  .empty {
+    @apply flex flex-col items-center rounded-xl border border-dashed border-line-strong px-6 py-10 text-center;
+  }
+
+  /* An A4-like document: the monthly report and the sign-off certificate */
+  .sheet {
+    @apply rounded-xl border border-line bg-surface p-6 shadow-card sm:p-10;
+  }
+
+  /* ---------- Badges ---------- */
+  .badge {
+    @apply inline-flex items-center gap-1 rounded-md px-1.5 py-0.5 text-xs font-medium whitespace-nowrap ring-1 ring-inset;
+  }
+  .badge svg {
+    @apply size-3;
+  }
+  .badge-neutral {
+    @apply bg-zinc-50 text-zinc-700 ring-zinc-500/20;
+  }
+  .badge-accent {
+    @apply bg-indigo-50 text-indigo-700 ring-indigo-600/20;
+  }
+  .badge-success {
+    @apply bg-emerald-50 text-emerald-700 ring-emerald-600/20;
+  }
+  .badge-warning {
+    @apply bg-amber-50 text-amber-800 ring-amber-600/25;
+  }
+  .badge-danger {
+    @apply bg-red-50 text-red-700 ring-red-600/20;
+  }
+  .badge-violet {
+    @apply bg-violet-50 text-violet-700 ring-violet-600/20;
+  }
+  .badge-danger-solid {
+    @apply bg-red-600 text-white ring-red-600;
+  }
+
+  /* ---------- Callouts ---------- */
+  .callout {
+    @apply flex gap-3 rounded-lg border px-4 py-3 text-sm;
+  }
+  .callout > svg {
+    @apply mt-0.5 size-4 shrink-0;
+  }
+  .callout-info {
+    @apply border-indigo-200 bg-indigo-50 text-indigo-950;
+  }
+  .callout-info > svg {
+    @apply text-indigo-600;
+  }
+  .callout-warning {
+    @apply border-amber-200 bg-amber-50 text-amber-950;
+  }
+  .callout-warning > svg {
+    @apply text-amber-600;
+  }
+  .callout-danger {
+    @apply border-red-200 bg-red-50 text-red-950;
+  }
+  .callout-danger > svg {
+    @apply text-red-600;
+  }
+  .callout-violet {
+    @apply border-violet-200 bg-violet-50 text-violet-950;
+  }
+  .callout-violet > svg {
+    @apply text-violet-600;
+  }
+  .callout-success {
+    @apply border-emerald-200 bg-emerald-50 text-emerald-950;
+  }
+  .callout-success > svg {
+    @apply text-emerald-600;
+  }
+
+  /* ---------- Data ---------- */
+  .table-wrap {
+    @apply overflow-x-auto rounded-xl border border-line bg-surface shadow-card;
+  }
+  .table {
+    @apply w-full text-sm;
+    font-variant-numeric: tabular-nums;
+  }
+  .table th {
+    @apply border-b border-line bg-canvas px-4 py-2.5 text-left text-xs font-medium whitespace-nowrap text-fg-subtle;
+  }
+  .table td {
+    @apply border-b border-line px-4 py-3 align-top;
+  }
+  .table tbody tr:last-child td {
+    @apply border-b-0;
+  }
+  .table-compact th {
+    @apply bg-transparent px-0 py-2 pr-4;
+  }
+  .table-compact td {
+    @apply px-0 py-2 pr-4;
+  }
+  .table-compact th:last-child,
+  .table-compact td:last-child {
+    @apply pr-0;
+  }
+
+  .stat {
+    @apply rounded-xl border border-line bg-surface px-4 py-3 shadow-card;
+  }
+  .stat-label {
+    @apply text-xs font-medium text-fg-subtle;
+  }
+  .stat-value {
+    @apply mt-1 text-xl font-semibold tracking-tight text-fg sm:text-2xl;
+    font-variant-numeric: tabular-nums;
+  }
+  .stat-hint {
+    @apply mt-0.5 text-xs text-fg-subtle;
+  }
+
+  .progress {
+    @apply h-2 overflow-hidden rounded-full bg-subtle;
+  }
+  .progress-bar {
+    @apply h-full rounded-full bg-accent transition-[width] duration-300;
+  }
+
+  .segmented {
+    @apply inline-flex rounded-lg bg-subtle p-1 text-sm;
+  }
+  .segmented > a {
+    @apply rounded-md px-3 py-1.5 font-medium text-fg-muted transition-colors hover:text-fg;
+  }
+  .segmented > a[aria-current] {
+    @apply bg-surface text-fg shadow-card;
+  }
+
+  /* ---------- Navigation ---------- */
+  .nav-section {
+    @apply px-2.5 pt-5 pb-1 text-[11px] font-semibold tracking-wider text-fg-subtle uppercase;
+  }
+  .nav-item {
+    @apply flex items-center gap-2.5 rounded-md px-2.5 py-1.5 text-sm font-medium text-fg-muted transition-colors hover:bg-subtle hover:text-fg;
+  }
+  .nav-item svg {
+    @apply size-4 shrink-0 text-fg-subtle;
+  }
+  .nav-item[aria-current="page"] {
+    @apply bg-subtle text-fg;
+  }
+  .nav-item[aria-current="page"] svg {
+    @apply text-accent;
+  }
+  .nav-count {
+    @apply ml-auto rounded-full bg-red-100 px-1.5 text-[11px] leading-5 font-semibold text-red-700 tabular-nums;
+  }
+
+  .tabs {
+    @apply flex gap-6 overflow-x-auto text-sm;
+  }
+  .tab {
+    @apply -mb-px border-b-2 border-transparent py-2.5 font-medium whitespace-nowrap text-fg-muted transition-colors hover:text-fg;
+  }
+  .tab[aria-current="page"] {
+    @apply border-accent text-fg;
+  }
+
+  .breadcrumbs {
+    @apply mb-2 flex flex-wrap items-center gap-1 text-sm text-fg-subtle;
+  }
+  .breadcrumbs a {
+    @apply hover:text-fg;
+  }
+  .breadcrumbs svg {
+    @apply size-3.5;
+  }
+
+  /* ---------- Toasts ---------- */
+  .toast-region {
+    @apply pointer-events-none fixed inset-x-0 top-0 z-50 flex flex-col items-center gap-2 p-3 sm:items-end sm:p-5;
+  }
+  .toast {
+    @apply pointer-events-auto flex w-full max-w-sm items-start gap-3 rounded-xl border border-line bg-surface px-4 py-3 text-sm text-fg shadow-pop;
+  }
+  .toast > svg {
+    @apply mt-0.5 size-4 shrink-0;
+  }
+  .toast-notice > svg {
+    @apply text-emerald-600;
+  }
+  .toast-alert {
+    @apply border-red-200;
+  }
+  .toast-alert > svg {
+    @apply text-red-600;
+  }
+  .toast-close {
+    @apply -my-1 -mr-2 ml-auto inline-flex size-7 shrink-0 cursor-pointer items-center justify-center rounded-md text-fg-subtle hover:bg-subtle hover:text-fg;
+  }
+}
