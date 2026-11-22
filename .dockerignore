@@ -7,3 +7,4 @@
 /bin/uat-seal
 /config/master.key
 /.env*
+/ops/
