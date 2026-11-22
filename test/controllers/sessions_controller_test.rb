@@ -6,6 +6,8 @@ class SessionsControllerTest < ActionDispatch::IntegrationTest
   test "new" do
     get new_session_path
     assert_response :success
+    assert_select "html[lang=zh-HK]"
+    assert_select "h1", "登入"
   end
 
   test "create with valid credentials" do
@@ -20,6 +22,9 @@ class SessionsControllerTest < ActionDispatch::IntegrationTest
 
     assert_redirected_to new_session_path
     assert_nil cookies[:session_id]
+
+    follow_redirect!
+    assert_select "[role=alert]", count: 1, text: /電郵或者密碼唔啱/
   end
 
   test "destroy" do

@@ -1,17 +1,14 @@
-<div class="mx-auto md:w-2/3 w-full">
-  <% if alert = flash[:alert] %>
-    <p class="py-2 px-3 bg-red-50 mb-5 text-red-500 font-medium rounded-lg inline-block" id="alert"><%= alert %></p>
-  <% end %>
+<% content_for :title, "忘記密碼" %>
+<h1 class="text-xl font-semibold tracking-tight text-fg">忘記密碼</h1>
+<p class="mt-1 text-sm text-fg-muted">輸入登入用嘅電郵，我哋會寄重設連結畀你。</p>
 
-  <h1 class="font-bold text-4xl">Forgot your password?</h1>
+<%= form_with url: passwords_path, class: "mt-6 space-y-4" do |form| %>
+  <div class="field">
+    <%= form.label :email_address, "電郵地址", class: "label" %>
+    <%= form.email_field :email_address, required: true, autofocus: true, autocomplete: "username", value: params[:email_address] %>
+  </div>
+  <%= form.submit "寄重設連結", class: "btn btn-primary btn-lg w-full" %>
+<% end %>
 
-  <%= form_with url: passwords_path, class: "contents" do |form| %>
-    <div class="my-5">
-      <%= form.email_field :email_address, required: true, autofocus: true, autocomplete: "username", placeholder: "Enter your email address", value: params[:email_address], class: "block shadow-sm rounded-md border border-gray-400 focus:outline-solid focus:outline-blue-600 px-3 py-2 mt-2 w-full" %>
-    </div>
-
-    <div class="inline">
-      <%= form.submit "Email reset instructions", class: "w-full sm:w-auto text-center rounded-lg px-3.5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white inline-block font-medium cursor-pointer" %>
-    </div>
-  <% end %>
-</div>
+<%= callout(:info, css: "mt-6") do %>收唔到 email？請直接聯絡你嘅開發者重設密碼。<% end %>
+<p class="mt-6 text-center text-sm"><%= link_to "返回登入", new_session_path, class: "link" %></p>
