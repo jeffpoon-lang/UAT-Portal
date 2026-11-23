@@ -176,6 +176,7 @@ Running on **Render's free tier** (Docker, Frankfurt) with **Neon's free Postgre
 - Each boot runs `db:prepare`, then an idempotent seed that creates the admin from `ADMIN_EMAIL` / `ADMIN_PASSWORD`. No demo data is created in production.
 - Environment: `DATABASE_URL` (Neon direct connection, not the pooler, so migrations work), `RAILS_MASTER_KEY`, `ADMIN_EMAIL`, `ADMIN_PASSWORD`, `WEB_CONCURRENCY=0` (single Puma process for 512 MB), and optionally `OPENAI_API_KEY`.
 - `render.yaml` describes the same setup as a Blueprint. Pushing to `main` redeploys automatically.
+- Render puts a free service to sleep after about 15 minutes without traffic, and waking it takes close to a minute. A small Cloudflare Worker in [`ops/keepalive`](ops/keepalive) requests `/up` every 10 minutes so that doesn't happen. That uses about 744 of the workspace's 750 free hours a month, so it only works while this is the workspace's only free web service.
 
 ## Limitations and next steps
 

@@ -1,0 +1,17 @@
+# Keeps the Render free-tier web service awake so the first visitor
+# doesn't wait for a cold start. Render sleeps a free service after
+# about 15 minutes without traffic; this pings /up every 10 minutes.
+name = "uat-portal-keepalive"
+main = "src/index.js"
+compatibility_date = "2026-11-01"
+workers_dev = false
+preview_urls = false
+
+[triggers]
+crons = ["*/10 * * * *"]
+
+[vars]
+TARGET_URL = "https://uat-portal-ur56.onrender.com/up"
+
+[observability]
+enabled = true
