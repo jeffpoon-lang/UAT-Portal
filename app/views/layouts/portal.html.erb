@@ -1,0 +1,47 @@
+<% content_for :shell do %>
+  <div class="app-shell min-h-screen">
+    <% if Current.user.role_admin? %>
+      <div class="app-banner bg-fg text-white">
+        <div class="mx-auto flex max-w-3xl items-center gap-2 px-4 py-2 text-xs">
+          <%= icon("eye", class: "size-3.5") %>
+          <span>Admin 預覽緊客戶 portal</span>
+          <%= link_to "返回 admin", admin_root_path, class: "ml-auto font-medium underline underline-offset-2" %>
+        </div>
+      </div>
+    <% end %>
+
+    <header class="app-topbar sticky top-0 z-30 border-b border-line bg-surface/90 backdrop-blur">
+      <div class="mx-auto flex h-14 max-w-3xl items-center gap-3 px-4">
+        <%= link_to portal_projects_path, class: "flex min-w-0 items-center gap-2.5" do %>
+          <%= render "layouts/brand" %>
+          <% if (client = Current.user.client) %>
+            <span class="hidden truncate border-l border-line pl-2.5 text-sm text-fg-muted sm:inline"><%= client.name %></span>
+          <% end %>
+        <% end %>
+
+        <details class="relative ml-auto" data-controller="menu" data-action="keydown->menu#keydown">
+          <summary class="btn btn-ghost btn-sm list-none [&::-webkit-details-marker]:hidden" aria-label="帳戶選單">
+            <%= icon("user") %><span class="hidden max-w-40 truncate sm:inline"><%= Current.user.client&.name || Current.user.email_address %></span><%= icon("chevron-down", class: "size-3.5") %>
+          </summary>
+          <div class="absolute right-0 z-40 mt-2 w-64 space-y-0.5 rounded-xl border border-line bg-surface p-1.5 shadow-pop">
+            <%= render "layouts/account" %>
+          </div>
+        </details>
+      </div>
+    </header>
+
+    <% items = portal_nav_items %>
+    <% if items.size > 1 %>
+      <nav class="app-tabs border-b border-line bg-surface" aria-label="主選單">
+        <div class="tabs mx-auto max-w-3xl px-4">
+          <% items.each do |item| %><%= nav_link(item, css: "tab") %><% end %>
+        </div>
+      </nav>
+    <% end %>
+
+    <main id="main" class="app-main mx-auto max-w-3xl px-4 py-6 sm:py-8">
+      <%= yield %>
+    </main>
+  </div>
+<% end %>
+<%= render template: "layouts/application" %>

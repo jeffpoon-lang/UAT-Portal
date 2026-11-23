@@ -1,23 +1,33 @@
-<%# plan, namespace（:admin 或 :portal） %>
+<%# 通知終止之後嘅交接清單。namespace 係 :admin 或者 :portal %>
+<%# locals: (plan:, namespace:) -%>
 <% done, total = plan.handover_progress %>
 <section aria-labelledby="handover-heading">
-  <h3 id="handover-heading" class="font-semibold mb-1">交接清單 <span class="text-sm font-normal text-slate-500">（完成 <%= done %>／<%= total %>）</span></h3>
+  <div class="mb-2 flex items-baseline justify-between gap-2">
+    <h2 id="handover-heading" class="section-title">交接清單</h2>
+    <span class="text-sm text-fg-muted tabular">完成 <%= done %>／<%= total %></span>
+  </div>
+  <div class="progress" role="progressbar" aria-valuemin="0" aria-valuemax="<%= total %>" aria-valuenow="<%= done %>" aria-label="交接進度">
+    <div class="progress-bar bg-emerald-500" style="width: <%= percent(done, total) %>%"></div>
+  </div>
   <% %w[provider client].each do |side| %>
     <% items = plan.handover_items.select { |i| i.side == side } %>
     <% next if items.empty? %>
-    <p class="text-xs uppercase tracking-wide text-slate-500 mt-3 mb-1"><%= HandoverItem::SIDE_LABELS[side] %></p>
-    <ul class="space-y-1">
+    <p class="eyebrow mt-5 mb-2"><%= HandoverItem::SIDE_LABELS[side] %></p>
+    <ul class="list">
       <% items.each do |item| %>
-        <li class="flex items-center gap-3 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm">
+        <li class="flex min-h-12 items-center gap-2 px-2 py-1 pr-4 text-sm">
+          <% box = "grid size-5 place-items-center rounded-md border #{item.done? ? "border-emerald-600 bg-emerald-600 text-white" : "border-line-strong bg-surface"}" %>
           <% if item.editable_by?(Current.user) %>
             <%= button_to url_for([ namespace, item ]), method: :patch, params: { done: item.done? ? "0" : "1" }, form_class: "contents",
-                  class: "h-5 w-5 shrink-0 rounded border #{item.done? ? "bg-emerald-600 border-emerald-600 text-white" : "border-slate-400 bg-white"} cursor-pointer text-xs leading-none",
-                  "aria-label": item.done? ? "取消剔選：#{item.title}" : "剔選完成：#{item.title}" do %><%= "✓" if item.done? %><% end %>
+                  class: "group grid size-11 shrink-0 cursor-pointer place-items-center rounded-lg hover:bg-subtle",
+                  "aria-label": item.done? ? "取消剔選：#{item.title}" : "剔選完成：#{item.title}" do %>
+              <span class="<%= box %> group-hover:border-accent"><%= icon("check", class: "size-3.5") if item.done? %></span>
+            <% end %>
           <% else %>
-            <span class="h-5 w-5 shrink-0 rounded border text-xs leading-5 text-center <%= item.done? ? "bg-emerald-600 border-emerald-600 text-white" : "border-slate-300 bg-slate-50" %>" aria-hidden="true"><%= "✓" if item.done? %></span>
+            <span class="grid size-11 shrink-0 place-items-center" aria-hidden="true"><span class="<%= box %> <%= "opacity-60" unless item.done? %>"><%= icon("check", class: "size-3.5") if item.done? %></span></span>
           <% end %>
-          <span class="<%= "text-slate-500 line-through" if item.done? %>"><%= item.title %></span>
-          <% if item.done? %><span class="ml-auto text-xs text-slate-500 whitespace-nowrap"><%= item.done_at.in_time_zone("Europe/London").strftime("%m-%d") %></span><% end %>
+          <span class="flex-1 <%= item.done? ? "text-fg-subtle line-through" : "text-fg" %>"><%= item.title %></span>
+          <% if item.done? %><span class="text-xs whitespace-nowrap text-fg-subtle"><%= local_time(item.done_at, :short) %></span><% end %>
         </li>
       <% end %>
     </ul>

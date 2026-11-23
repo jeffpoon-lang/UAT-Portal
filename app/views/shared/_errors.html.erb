@@ -1,5 +1,9 @@
+<%# locals: (record:) -%>
 <% if record.errors.any? %>
-  <div class="mb-4 rounded-lg bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-800">
-    <ul class="list-disc pl-5"><% record.errors.full_messages.each do |m| %><li><%= m %></li><% end %></ul>
-  </div>
+  <%= callout(:danger, css: "mb-5", role: "alert") do %>
+    <p class="font-medium">有 <%= record.errors.count %> 個地方要改：</p>
+    <ul class="mt-1 list-disc space-y-0.5 pl-5">
+      <% record.errors.full_messages.each do |message| %><li><%= message %></li><% end %>
+    </ul>
+  <% end %>
 <% end %>

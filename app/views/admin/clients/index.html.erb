@@ -1,18 +1,32 @@
-<% content_for :title, "客戶" %>
-<div class="flex items-center justify-between mb-6">
-  <h1 class="text-2xl font-semibold">客戶</h1>
-  <%= link_to "新客戶", new_admin_client_path, class: "rounded-lg bg-indigo-600 px-4 py-2 text-sm text-white hover:bg-indigo-700" %>
-</div>
-<table class="w-full bg-white rounded-xl border border-slate-200 text-sm">
-  <thead class="text-left text-slate-500"><tr><th class="px-4 py-2">名</th><th class="px-4 py-2">Code</th><th class="px-4 py-2">Email</th><th class="px-4 py-2">Projects</th></tr></thead>
-  <tbody>
-    <% @clients.each do |c| %>
-      <tr class="border-t border-slate-100">
-        <td class="px-4 py-2"><%= link_to c.name, admin_client_path(c), class: "text-indigo-700 hover:underline" %></td>
-        <td class="px-4 py-2 font-mono"><%= c.code %></td>
-        <td class="px-4 py-2"><%= c.contact_email %></td>
-        <td class="px-4 py-2"><%= c.projects.size %></td>
-      </tr>
-    <% end %>
-  </tbody>
-</table>
+<%= page_header "客戶" do %>
+  <%= link_to new_admin_client_path, class: "btn btn-primary" do %><%= icon("plus") %>新客戶<% end %>
+<% end %>
+
+<% if @clients.empty? %>
+  <%= empty_state("未有客戶", icon: "users", body: "加咗客戶之後就可以開 project 同設定月費維護。") do %>
+    <%= link_to new_admin_client_path, class: "btn btn-primary" do %><%= icon("plus") %>新客戶<% end %>
+  <% end %>
+<% else %>
+  <div class="table-wrap">
+    <table class="table">
+      <thead><tr><th>客戶</th><th>Code</th><th>Email</th><th class="text-right">Projects</th><th>月費維護</th></tr></thead>
+      <tbody>
+        <% @clients.each do |c| %>
+          <tr>
+            <td class="font-medium"><%= link_to c.name, admin_client_path(c), class: "text-fg hover:text-accent" %></td>
+            <td><span class="code-chip"><%= c.code %></span></td>
+            <td class="text-fg-muted"><%= c.contact_email %></td>
+            <td class="text-right"><%= c.projects.size %></td>
+            <td>
+              <% if (plan = c.retainer_plan) %>
+                <%= plan.notice_given? ? badge("通知終止中", :danger) : badge(hkd(plan.monthly_fee_hkd) + "／月", :success) %>
+              <% else %>
+                <span class="text-fg-subtle">—</span>
+              <% end %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+<% end %>

@@ -1,11 +1,15 @@
-<%= form_with model: [ :admin, project, test_case ], class: "space-y-4 max-w-2xl bg-white rounded-xl border border-slate-200 p-6" do |f| %>
+<%# locals: (project:, test_case:) -%>
+<%= form_with model: [ :admin, project, test_case ], class: "card card-body max-w-2xl space-y-4" do |f| %>
   <%= render "shared/errors", record: test_case %>
-  <div class="flex gap-4">
-    <div><%= f.label :code, "編號", class: "block text-sm mb-1" %><%= f.text_field :code, class: "w-28 rounded-lg border-slate-300 font-mono" %></div>
-    <div><%= f.label :source, "邊個寫", class: "block text-sm mb-1" %><%= f.select :source, [ [ "客戶", "client" ], [ "AE", "ae" ], [ "IT", "it" ] ], {}, class: "rounded-lg border-slate-300" %></div>
+  <div class="grid grid-cols-2 gap-4">
+    <%= f.field :code, "編號" do %><%= f.text_field :code, class: "font-mono" %><% end %>
+    <%= f.field :source, "邊個寫" do %><%= f.select :source, [ [ "客戶", "client" ], [ "AE", "ae" ], [ "IT", "it" ] ] %><% end %>
   </div>
-  <div><%= f.label :title, "標題", class: "block text-sm mb-1" %><%= f.text_field :title, class: "w-full rounded-lg border-slate-300" %></div>
-  <div><%= f.label :steps, "步驟", class: "block text-sm mb-1" %><%= f.text_area :steps, rows: 4, class: "w-full rounded-lg border-slate-300" %></div>
-  <div><%= f.label :expected, "預期結果", class: "block text-sm mb-1" %><%= f.text_area :expected, rows: 2, class: "w-full rounded-lg border-slate-300" %></div>
-  <%= f.submit "儲存", class: "rounded-lg bg-indigo-600 px-4 py-2 text-sm text-white hover:bg-indigo-700 cursor-pointer" %>
+  <%= f.field :title, "標題" do %><%= f.text_field :title %><% end %>
+  <%= f.field :steps, "步驟", optional: true do %><%= f.text_area :steps, rows: 4 %><% end %>
+  <%= f.field :expected, "預期結果" do %><%= f.text_area :expected, rows: 2 %><% end %>
+  <div class="flex gap-2 pt-2">
+    <%= f.submit "儲存" %>
+    <%= link_to "取消", admin_project_path(project), class: "btn btn-ghost" %>
+  </div>
 <% end %>

@@ -1,59 +1,62 @@
+<% subtitle = capture do %>
+  <span class="inline-flex flex-wrap items-center gap-x-2 gap-y-1">
+    <%= round_status_badge(@round, :admin) %>
+    <span>開咗 <%= local_time(@round.opened_at) %></span>
+    <% if @round.sign_off %>· <%= link_to @round.sign_off.doc_number, admin_sign_off_path(@round.sign_off), class: "link" %><% end %>
+  </span>
+<% end %>
 <% content_for :title, "Round #{@round.number} · #{@project.name}" %>
-<p class="text-sm text-slate-500 mb-1"><%= link_to @project.name, admin_project_path(@project), class: "hover:underline" %> · <%= @project.client.name %></p>
-<div class="flex flex-wrap items-baseline justify-between gap-2 mb-6">
-  <h1 class="text-2xl font-semibold">UAT Round <%= @round.number %><span class="text-base font-normal text-slate-500">／<%= @project.allowed_uat_rounds %></span></h1>
+<%= page_header "UAT Round #{@round.number}／#{@project.allowed_uat_rounds}", subtitle: subtitle,
+      crumbs: [ [ "Projects", admin_projects_path ], [ @project.name, admin_project_path(@project) ] ] %>
+
+<div class="card card-body mb-6 flex flex-wrap items-center justify-between gap-3">
+  <span class="text-sm font-medium text-fg"><%= @project.client.name %> 嘅測試結果</span>
   <%= render "shared/round_counts", round: @round %>
 </div>
-<p class="text-sm text-slate-600 mb-4">
-  狀態：<strong><%= { "open" => "客戶測試中", "changes_requested" => "客戶要求修正", "signed_off" => "已簽署" }[@round.status] %></strong>
-  · 開咗 <%= @round.opened_at.in_time_zone("Europe/London").strftime("%Y-%m-%d %H:%M") %>
-  <% if @round.sign_off %> · <%= link_to @round.sign_off.doc_number, admin_sign_off_path(@round.sign_off), class: "text-indigo-700 underline" %><% end %>
-</p>
+
 <% if @round.all_answered? && !@round.all_passed? %>
-  <section class="rounded-xl bg-white border border-slate-200 p-5 mb-6" aria-labelledby="ai-heading">
-    <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
-      <h2 id="ai-heading" class="font-semibold">AI 摘要</h2>
-      <%= button_to (@round.ai_summary ? "重新摘要" : "用 AI 摘要同分類"), summarise_admin_project_uat_round_path(@project, @round),
-                    class: "rounded-lg border border-slate-300 px-3 py-1.5 text-sm hover:bg-slate-50 cursor-pointer" %>
+  <section class="card mb-6" aria-labelledby="ai-heading">
+    <div class="card-header">
+      <h2 id="ai-heading" class="section-title">AI 摘要</h2>
+      <%= button_to (@round.ai_summary ? "重新摘要" : "用 AI 摘要同分類"), summarise_admin_project_uat_round_path(@project, @round), class: "btn btn-secondary btn-sm" %>
     </div>
-    <% if (summary = @round.ai_summary) %>
-      <p class="text-sm mb-3"><%= summary["overall"] %></p>
-      <% cat_colors = { "bug" => "bg-red-100 text-red-800", "change_request" => "bg-violet-100 text-violet-800", "unclear" => "bg-slate-100 text-slate-700" } %>
-      <ul class="space-y-2">
-        <% summary["items"].each do |item| %>
-          <li class="text-sm">
-            <span class="font-mono text-slate-500 mr-1"><%= item["code"] %></span>
-            <span class="inline-block rounded-full px-2 py-0.5 text-xs font-medium <%= cat_colors.fetch(item["category"], cat_colors["unclear"]) %>"><%= AiSummaryService::CATEGORY_LABELS.fetch(item["category"], item["category"]) %></span>
-            <%= item["summary"] %>
-            <span class="block text-xs text-slate-500 mt-0.5"><%= item["reason"] %></span>
-          </li>
+    <div class="card-body">
+      <% if (summary = @round.ai_summary) %>
+        <p class="text-sm text-fg"><%= summary["overall"] %></p>
+        <ul class="mt-4 space-y-3">
+          <% summary["items"].each do |item| %>
+            <li class="text-sm">
+              <div class="flex flex-wrap items-center gap-2">
+                <span class="code-chip"><%= item["code"] %></span>
+                <%= ai_category_badge(item["category"]) %>
+                <span class="text-fg"><%= item["summary"] %></span>
+              </div>
+              <p class="mt-1 text-xs text-fg-subtle"><%= item["reason"] %></p>
+            </li>
+          <% end %>
+        </ul>
+        <% if summary["items"].any? { |i| i["category"] == "change_request" } %>
+          <%= callout(:violet, css: "mt-4") do %>有啲似係改需求，可能要 <%= link_to "開 CR", new_admin_project_change_request_path(@project), class: "font-medium underline" %>。<% end %>
         <% end %>
-      </ul>
-      <% if summary["items"].any? { |i| i["category"] == "change_request" } %>
-        <p class="text-sm mt-4 rounded-lg bg-violet-50 px-3 py-2">有啲似係改需求，可能要 <%= link_to "開 CR", new_admin_project_change_request_path(@project), class: "text-indigo-700 underline" %>。</p>
+        <p class="mt-4 text-xs text-fg-subtle">AI 分類只供參考，<%= local_time(@round.ai_summarised_at) %> 產生</p>
+      <% else %>
+        <p class="text-sm text-fg-subtle">將唔 pass 嘅 comment 交畀 AI，分出邊啲係 bug、邊啲似改需求。</p>
       <% end %>
-      <p class="text-xs text-slate-400 mt-3">AI 分類只供參考，<%= @round.ai_summarised_at.in_time_zone("Europe/London").strftime("%Y-%m-%d %H:%M") %> 產生</p>
-    <% else %>
-      <p class="text-sm text-slate-500">將唔 pass 嘅 comment 交畀 AI，分出邊啲係 bug、邊啲似改需求。</p>
-    <% end %>
+    </div>
   </section>
 <% end %>
 
-<div class="space-y-3">
+<ul class="list">
   <% @round.test_results.each do |r| %>
-    <div class="rounded-xl bg-white border border-slate-200 p-4">
+    <li class="px-4 py-4 sm:px-5">
       <div class="flex items-start justify-between gap-3">
-        <div><span class="font-mono text-sm text-slate-500 mr-2"><%= r.test_case.code %></span><%= r.test_case.title %></div>
-        <%= render "shared/result_badge", result: r %>
+        <p class="flex items-baseline gap-2"><span class="code-chip shrink-0"><%= r.test_case.code %></span><span class="font-medium text-fg"><%= r.test_case.title %></span></p>
+        <%= result_badge(r) %>
       </div>
-      <% if r.comment.present? %><p class="mt-2 text-sm bg-slate-50 rounded-lg px-3 py-2"><%= r.comment %></p><% end %>
+      <% if r.comment.present? %><p class="prose-text mt-3 rounded-lg bg-subtle px-3 py-2"><%= r.comment %></p><% end %>
       <% if r.screenshots.attached? %>
-        <div class="flex flex-wrap gap-2 mt-3">
-          <% r.screenshots.each do |shot| %>
-            <%= link_to image_tag(url_for(shot), class: "h-24 w-auto rounded-md border border-slate-200", alt: "#{r.test_case.code} 截圖"), url_for(shot), target: "_blank" %>
-          <% end %>
-        </div>
+        <%= render "shared/screenshots", attachments: r.screenshots, alt: r.test_case.code %>
       <% end %>
-    </div>
+    </li>
   <% end %>
-</div>
+</ul>

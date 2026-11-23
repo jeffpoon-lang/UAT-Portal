@@ -1,41 +1,45 @@
-<%# client, plan %>
-<section class="mb-8 rounded-xl bg-slate-100/60 border border-slate-200 p-5" aria-labelledby="retainer-heading">
-  <div class="flex flex-wrap items-center justify-between gap-2 mb-4">
-    <h2 id="retainer-heading" class="text-lg font-semibold">月費維護（retainer）</h2>
+<%# locals: (client:, plan:) -%>
+<section class="card" aria-labelledby="retainer-heading">
+  <div class="card-header">
+    <h2 id="retainer-heading" class="section-title">月費維護</h2>
     <% if plan %>
-      <%= link_to "改設定", edit_admin_client_retainer_plan_path(client), class: "rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-sm hover:bg-slate-50" %>
+      <%= link_to edit_admin_client_retainer_plan_path(client), class: "btn btn-secondary btn-sm" do %><%= icon("pencil") %>改設定<% end %>
     <% else %>
-      <%= link_to "設定 retainer", new_admin_client_retainer_plan_path(client), class: "rounded-lg bg-indigo-600 px-3 py-1.5 text-sm text-white hover:bg-indigo-700" %>
+      <%= link_to new_admin_client_retainer_plan_path(client), class: "btn btn-primary btn-sm" do %><%= icon("plus") %>設定 retainer<% end %>
     <% end %>
   </div>
 
-  <% if plan.nil? %>
-    <p class="text-sm text-slate-500">未設定。上線之後可以喺度設定月費、每月修改輪數同通知期。</p>
-  <% else %>
-    <dl class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-sm mb-4">
-      <div><dt class="text-xs text-slate-500">月費</dt><dd class="font-semibold"><%= hkd(plan.monthly_fee_hkd) %></dd></div>
-      <div><dt class="text-xs text-slate-500">每月修改</dt><dd class="font-semibold"><%= plan.included_rounds %> 輪，超出 <%= hkd(plan.extra_round_hkd) %>／輪</dd></div>
-      <div><dt class="text-xs text-slate-500">開始日</dt><dd class="font-semibold"><%= plan.starts_on %></dd></div>
-      <div><dt class="text-xs text-slate-500">通知期</dt><dd class="font-semibold"><%= plan.notice_days %> 日<% if plan.quote_ref.present? %> · <span class="font-mono"><%= plan.quote_ref %></span><% end %></dd></div>
-    </dl>
-    <div class="mb-4"><%= render "shared/retainer_usage", plan: plan, today: Date.current %></div>
-
-    <% if plan.notice_given? %>
-      <div class="rounded-lg bg-red-50 border border-red-200 px-4 py-3 text-sm mb-4 flex flex-wrap items-center justify-between gap-2">
-        <span><%= plan.notice_by_label %>於 <%= plan.notice_given_on %> 通知終止，合約 <strong><%= plan.ends_on %></strong> 完結<% if (d = plan.days_left) && d >= 0 %>（仲有 <%= d %> 日）<% end %></span>
-        <%= button_to "撤回通知", withdraw_notice_admin_client_retainer_plan_path(client), class: "rounded-lg border border-red-300 bg-white px-3 py-1 text-sm hover:bg-red-100 cursor-pointer", data: { turbo_confirm: "撤回之後交接清單會清走，確定？" } %>
-      </div>
-      <%= render "shared/handover_items", plan: plan, namespace: :admin %>
+  <div class="card-body space-y-5">
+    <% if plan.nil? %>
+      <p class="text-sm text-fg-subtle">未設定。上線之後可以喺度設定月費、每月修改輪數同通知期。</p>
     <% else %>
-      <%= form_with url: give_notice_admin_client_retainer_plan_path(client), class: "flex flex-wrap items-end gap-3 text-sm" do %>
-        <label>邊方通知
-          <%= select_tag :notice_given_by, options_for_select(RetainerPlan::NOTICE_BY_LABELS.invert), class: "block mt-1 rounded-lg border-slate-300" %>
-        </label>
-        <label>通知日期
-          <%= date_field_tag :notice_given_on, Date.current, class: "block mt-1 rounded-lg border-slate-300" %>
-        </label>
-        <button class="rounded-lg border border-red-300 bg-white px-3 py-2 text-red-700 hover:bg-red-50 cursor-pointer" data-turbo-confirm="記錄通知終止？完結日會自動計，交接清單會列出">記錄通知終止</button>
+      <dl class="grid grid-cols-2 gap-4 text-sm">
+        <div><dt class="text-xs text-fg-subtle">月費</dt><dd class="mt-0.5 font-semibold text-fg tabular"><%= hkd(plan.monthly_fee_hkd) %></dd></div>
+        <div><dt class="text-xs text-fg-subtle">每月修改</dt><dd class="mt-0.5 font-semibold text-fg"><%= plan.included_rounds %> 輪 <span class="font-normal text-fg-muted">· 超出 <%= hkd(plan.extra_round_hkd) %>／輪</span></dd></div>
+        <div><dt class="text-xs text-fg-subtle">開始日</dt><dd class="mt-0.5 font-semibold text-fg tabular"><%= plan.starts_on %></dd></div>
+        <div><dt class="text-xs text-fg-subtle">通知期</dt><dd class="mt-0.5 font-semibold text-fg"><%= plan.notice_days %> 日<% if plan.quote_ref.present? %> <span class="code-chip ml-1"><%= plan.quote_ref %></span><% end %></dd></div>
+      </dl>
+
+      <%= render "shared/retainer_usage", plan: plan, today: Date.current, framed: false %>
+
+      <% if plan.notice_given? %>
+        <%= callout(:danger) do %>
+          <p><%= plan.notice_by_label %>於 <%= plan.notice_given_on %> 通知終止，合約 <strong><%= plan.ends_on %></strong> 完結<% if (d = plan.days_left) && d >= 0 %>（仲有 <%= d %> 日）<% end %></p>
+          <%= button_to "撤回通知", withdraw_notice_admin_client_retainer_plan_path(client), class: "btn btn-danger btn-sm mt-3", form_class: "contents",
+                data: { turbo_confirm: "撤回之後交接清單會清走，確定？" } %>
+        <% end %>
+        <%= render "shared/handover_items", plan: plan, namespace: :admin %>
+      <% else %>
+        <%= form_with url: give_notice_admin_client_retainer_plan_path(client), class: "rounded-lg border border-dashed border-line-strong p-4" do %>
+          <p class="text-sm font-medium text-fg">記錄通知終止</p>
+          <p class="hint mt-0.5">完結日會自動計，兩邊嘅交接清單會即刻列出。</p>
+          <div class="mt-3 grid gap-3 sm:grid-cols-2">
+            <div><%= label_tag :notice_given_by, "邊方通知", class: "label" %><%= select_tag :notice_given_by, options_for_select(RetainerPlan::NOTICE_BY_LABELS.invert), class: "select" %></div>
+            <div><%= label_tag :notice_given_on, "通知日期", class: "label" %><%= date_field_tag :notice_given_on, Date.current, class: "input" %></div>
+          </div>
+          <button class="btn btn-danger mt-3" data-turbo-confirm="記錄通知終止？完結日會自動計，交接清單會列出">記錄通知終止</button>
+        <% end %>
       <% end %>
     <% end %>
-  <% end %>
+  </div>
 </section>

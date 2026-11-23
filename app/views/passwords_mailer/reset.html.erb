@@ -1,6 +1,6 @@
+<p>你好，</p>
 <p>
-  You can reset your password on
-  <%= link_to "this password reset page", edit_password_url(@user.password_reset_token) %>.
-
-  This link will expire in <%= distance_of_time_in_words(0, @user.password_reset_token_expires_in) %>.
+  撳呢個連結設定新密碼：<%= link_to "重設密碼", edit_password_url(@user.password_reset_token) %>。
+  連結 <%= @user.password_reset_token_expires_in.in_minutes.to_i %> 分鐘後失效。
 </p>
+<p>如果唔係你要求重設，可以唔理呢封 email，密碼唔會改。</p>

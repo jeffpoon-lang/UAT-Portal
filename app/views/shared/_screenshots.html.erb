@@ -1,0 +1,8 @@
+<%# locals: (attachments:, alt:, size: "h-24") -%>
+<div class="mt-3 flex flex-wrap gap-2">
+  <% attachments.each_with_index do |shot, i| %>
+    <%= link_to url_for(shot), target: "_blank", rel: "noopener", data: { turbo: false }, class: "group block overflow-hidden rounded-lg border border-line bg-subtle" do %>
+      <%= image_tag url_for(shot), class: "#{size} w-auto transition-opacity group-hover:opacity-90", alt: "#{alt} 截圖 #{i + 1}", loading: "lazy" %>
+    <% end %>
+  <% end %>
+</div>

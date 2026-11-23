@@ -2,7 +2,7 @@ class Admin::ClientsController < Admin::BaseController
   before_action :set_client, only: %i[show edit update]
 
   def index
-    @clients = Client.order(:name)
+    @clients = Client.includes(:projects, :retainer_plan).order(:name)
   end
 
   def show

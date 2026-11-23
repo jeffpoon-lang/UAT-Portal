@@ -1,3 +1,6 @@
 <% content_for :title, @sign_off.doc_number %>
-<p class="text-sm text-slate-500 mb-4"><%= link_to "← 返回 project", portal_project_path(@sign_off.project), class: "hover:underline" %> · 用瀏覽器「列印」可以存成 PDF</p>
+<div class="mb-6 flex flex-wrap items-center justify-between gap-3" data-print="hide" data-controller="print">
+  <%= link_to portal_project_path(@sign_off.project), class: "btn btn-ghost -ml-2" do %><%= icon("arrow-left") %><%= @sign_off.project.name %><% end %>
+  <button type="button" class="btn btn-secondary" data-action="print#print"><%= icon("printer") %>列印／存 PDF</button>
+</div>
 <%= render "shared/sign_off_certificate", sign_off: @sign_off %>

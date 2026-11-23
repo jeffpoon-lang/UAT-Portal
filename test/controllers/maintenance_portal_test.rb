@@ -22,7 +22,7 @@ class MaintenancePortalTest < ActionDispatch::IntegrationTest
 
     sign_in_as users(:one)
     get admin_root_path
-    assert_match "其中 <strong>1</strong> 張緊急", response.body
+    assert_select "a", text: /其中\s*1\s*張緊急/
 
     post admin_ticket_logs_path(ticket), params: { ticket_log: { logged_on: Date.current, minutes: 40, note: "修好 form validation" } }
     assert ticket.reload.status_in_progress?

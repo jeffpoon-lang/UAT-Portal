@@ -1,66 +1,63 @@
-<% content_for :title, @project.name %>
-<h1 class="text-2xl font-semibold mb-1"><%= @project.name %></h1>
-<p class="text-sm text-slate-500 mb-6">而家階段：<strong><%= @project.phase_label %></strong></p>
-<div class="mb-8"><%= render "shared/phase_progress", project: @project %></div>
+<%= page_header @project.name, crumbs: [ [ "我嘅 project", portal_projects_path ] ] %>
+
+<div class="card card-body mb-6"><%= render "shared/phase_progress", project: @project, full: true %></div>
 
 <% if (round = @project.open_round) %>
-  <%= link_to portal_project_uat_round_path(@project, round), class: "block rounded-xl bg-indigo-600 text-white p-5 mb-8 hover:bg-indigo-700" do %>
-    <div class="text-sm opacity-80">輪到你測試</div>
-    <div class="text-lg font-semibold">開始 UAT Round <%= round.number %> →</div>
+  <%= link_to portal_project_uat_round_path(@project, round), class: "mb-8 flex items-center gap-4 rounded-xl bg-accent p-5 text-white shadow-card transition-colors hover:bg-accent-hover" do %>
+    <span class="grid size-11 shrink-0 place-items-center rounded-full bg-white/15"><%= icon("file-check-2", class: "size-5") %></span>
+    <span class="min-w-0 flex-1">
+      <span class="block text-sm text-white/80">輪到你測試</span>
+      <span class="block text-lg font-semibold">開始 UAT Round <%= round.number %></span>
+    </span>
+    <%= icon("arrow-right", class: "size-5 shrink-0") %>
   <% end %>
 <% end %>
 
 <% if @project.accepts_tickets? || @project.tickets.any? %>
-  <section class="mb-8" aria-labelledby="tickets-heading">
-    <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
-      <h2 id="tickets-heading" class="text-lg font-semibold">Maintenance</h2>
-      <% if @project.accepts_tickets? %>
-        <%= link_to "報問題／要求改動", new_portal_project_ticket_path(@project), class: "rounded-lg bg-indigo-600 px-4 py-2 text-sm text-white hover:bg-indigo-700" %>
-      <% end %>
-    </div>
+  <section class="mb-8 space-y-4" aria-labelledby="tickets-heading">
+    <h2 id="tickets-heading" class="section-title">Maintenance</h2>
     <% if (plan = @project.client.retainer_plan)&.active_on?(Date.current) %>
-      <div class="mb-3"><%= render "shared/retainer_usage", plan: plan, today: Date.current %></div>
+      <%= render "shared/retainer_usage", plan: plan, today: Date.current %>
+    <% end %>
+    <% if @project.accepts_tickets? %>
+      <%= link_to new_portal_project_ticket_path(@project), class: "btn btn-primary btn-lg w-full sm:w-auto" do %><%= icon("plus") %>報問題／要求改動<% end %>
     <% end %>
     <% if @project.tickets.empty? %>
-      <p class="text-sm text-slate-500">未有 ticket。</p>
+      <p class="text-sm text-fg-subtle">未有 ticket。</p>
     <% else %>
-      <ul class="space-y-2">
+      <div class="list">
         <% @project.tickets.each do |t| %>
-          <li>
-            <%= link_to portal_project_ticket_path(@project, t), class: "flex flex-wrap items-center justify-between gap-2 rounded-lg bg-white border border-slate-200 px-4 py-3 hover:border-indigo-300" do %>
-              <span><span class="font-mono text-sm text-slate-500 mr-2"><%= t.doc_number %></span><%= t.title %></span>
-              <span class="flex gap-1"><%= render "shared/ticket_badges", ticket: t %></span>
-            <% end %>
-          </li>
+          <%= render "shared/ticket_row", ticket: t, href: portal_project_ticket_path(@project, t) %>
         <% end %>
-      </ul>
+      </div>
     <% end %>
   </section>
 <% end %>
 
 <% if @project.uat_rounds.any? %>
-  <h2 class="text-lg font-semibold mb-3">UAT 記錄</h2>
-  <ul class="space-y-2 mb-8">
-    <% @project.uat_rounds.each do |r| %>
-      <li class="rounded-lg bg-white border border-slate-200 px-4 py-3 flex flex-wrap items-center justify-between gap-2">
-        <%= link_to "Round #{r.number}", portal_project_uat_round_path(@project, r), class: "font-medium text-indigo-700 hover:underline" %>
-        <%= render "shared/round_counts", round: r %>
-        <span class="text-xs text-slate-500">
-          <%= { "open" => "測試中", "changes_requested" => "等 IT 修正", "signed_off" => "已簽署" }[r.status] %>
-        </span>
-      </li>
-    <% end %>
-  </ul>
+  <section class="mb-8" aria-labelledby="rounds-heading">
+    <h2 id="rounds-heading" class="section-title mb-3">UAT 記錄</h2>
+    <div class="list">
+      <% @project.uat_rounds.each do |r| %>
+        <%= render "shared/round_row", round: r, href: portal_project_uat_round_path(@project, r), audience: :client %>
+      <% end %>
+    </div>
+  </section>
 <% end %>
 
 <% if @project.test_cases.any? %>
-<h2 class="text-lg font-semibold mb-3">Test cases</h2>
-<ul class="space-y-2">
-  <% @project.test_cases.each do |tc| %>
-    <li class="rounded-lg bg-white border border-slate-200 px-4 py-3">
-      <span class="font-mono text-sm text-slate-500 mr-2"><%= tc.code %></span><%= tc.title %>
-      <% if tc.expected.present? %><p class="text-sm text-slate-600 mt-1">預期：<%= tc.expected %></p><% end %>
-    </li>
-  <% end %>
-</ul>
+  <details class="card group">
+    <summary class="flex cursor-pointer list-none items-center justify-between gap-3 px-4 py-3 sm:px-5 [&::-webkit-details-marker]:hidden">
+      <span class="section-title">Test cases <span class="ml-1 text-sm font-normal text-fg-subtle tabular"><%= @project.test_cases.size %> 條</span></span>
+      <%= icon("chevron-down", class: "size-4 text-fg-subtle transition-transform group-open:rotate-180") %>
+    </summary>
+    <ul class="divide-y divide-line border-t border-line">
+      <% @project.test_cases.each do |tc| %>
+        <li class="px-4 py-3 sm:px-5">
+          <p class="flex items-baseline gap-2"><span class="code-chip shrink-0"><%= tc.code %></span><span class="text-sm font-medium text-fg"><%= tc.title %></span></p>
+          <% if tc.expected.present? %><p class="mt-1 text-sm text-fg-muted">預期：<%= tc.expected %></p><% end %>
+        </li>
+      <% end %>
+    </ul>
+  </details>
 <% end %>

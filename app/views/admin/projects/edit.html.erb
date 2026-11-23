@@ -1,2 +1,2 @@
-<h1 class="text-2xl font-semibold mb-6">改 project</h1>
+<%= page_header "改 project", crumbs: [ [ "Projects", admin_projects_path ], [ @project.name, admin_project_path(@project) ] ] %>
 <%= render "form", project: @project %>

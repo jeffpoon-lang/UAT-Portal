@@ -1,0 +1,48 @@
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  body {
+    @apply bg-canvas text-fg antialiased;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+  }
+
+  ::selection {
+    background-color: var(--color-accent-soft);
+  }
+
+  /* Turbo shows this bar while a slow page loads */
+  .turbo-progress-bar {
+    height: 2px;
+    background-color: var(--color-accent);
+  }
+
+  /* Turbo frames are inline by default, which drops the spacing between cards */
+  turbo-frame {
+    display: block;
+  }
+
+  dialog::backdrop {
+    background-color: rgb(24 24 27 / 0.4);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    ::before,
+    ::after {
+      animation-duration: 0.01ms !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+@utility tabular {
+  font-variant-numeric: tabular-nums;
+}

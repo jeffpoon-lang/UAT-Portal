@@ -1,16 +1,15 @@
-<% content_for :title, "Projects" %>
-<div class="flex items-center justify-between mb-6">
-  <h1 class="text-2xl font-semibold">Projects</h1>
-  <%= link_to "新 project", new_admin_project_path, class: "rounded-lg bg-indigo-600 px-4 py-2 text-sm text-white hover:bg-indigo-700" %>
-</div>
-<div class="space-y-4">
-  <% @projects.each do |project| %>
-    <%= link_to admin_project_path(project), class: "block rounded-xl bg-white border border-slate-200 p-4 hover:border-indigo-300" do %>
-      <div class="flex items-baseline justify-between mb-3">
-        <span class="font-medium"><%= project.name %></span>
-        <span class="text-sm text-slate-500"><%= project.client.name %></span>
-      </div>
-      <%= render "shared/phase_progress", project: project %>
-    <% end %>
+<%= page_header "Projects" do %>
+  <%= link_to new_admin_project_path, class: "btn btn-primary" do %><%= icon("plus") %>新 project<% end %>
+<% end %>
+
+<% if @projects.empty? %>
+  <%= empty_state("未有 project", icon: "folder-kanban", body: "先加客戶，再開 project。") do %>
+    <%= link_to new_admin_project_path, class: "btn btn-primary" do %><%= icon("plus") %>新 project<% end %>
   <% end %>
-</div>
+<% else %>
+  <div class="grid gap-4 md:grid-cols-2">
+    <% @projects.each do |project| %>
+      <%= render "shared/project_card", project: project, href: admin_project_path(project), show_client: true %>
+    <% end %>
+  </div>
+<% end %>

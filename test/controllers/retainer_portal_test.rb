@@ -26,7 +26,7 @@ class RetainerPortalTest < ActionDispatch::IntegrationTest
     sign_in_as users(:two)
     3.times { post portal_project_tickets_path(@project), params: ticket_params }
     get portal_project_path(@project)
-    assert_match "<strong class=\"text-lg\">3</strong> ／ 3 輪", response.body
+    assert_select "[role=progressbar][aria-valuenow='3'][aria-valuemax='3']"
 
     get new_portal_project_ticket_path(@project)
     assert_match "我明白，確認開額外一輪", response.body

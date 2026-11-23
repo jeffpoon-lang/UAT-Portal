@@ -1,0 +1,20 @@
+<%# 客戶測試頁頂嘅進度。Portal::TestResultsController 每次儲存都會用 turbo stream 更新 #round-counts 入面呢個 partial %>
+<%# locals: (round:) -%>
+<% c = round.counts %>
+<% total = c.values.sum %>
+<% tested = total - c["pending"] %>
+<div class="flex flex-wrap items-center justify-between gap-x-3 gap-y-1">
+  <span class="text-sm font-medium text-fg tabular">已測 <%= tested %>／<%= total %></span>
+  <span class="flex items-center gap-3 text-xs text-fg-muted tabular">
+    <span class="inline-flex items-center gap-1.5"><span class="size-1.5 rounded-full bg-emerald-500"></span><%= c["pass"] %> pass</span>
+    <span class="inline-flex items-center gap-1.5"><span class="size-1.5 rounded-full bg-red-500"></span><%= c["fail"] %> fail</span>
+    <span class="inline-flex items-center gap-1.5"><span class="size-1.5 rounded-full bg-amber-500"></span><%= c["blocked"] %> 測唔到</span>
+  </span>
+</div>
+<div class="progress mt-2 flex" role="progressbar" aria-label="已測試" aria-valuemin="0" aria-valuemax="<%= total %>" aria-valuenow="<%= tested %>">
+  <% if total.positive? %>
+    <% { "pass" => "bg-emerald-500", "fail" => "bg-red-500", "blocked" => "bg-amber-500" }.each do |status, color| %>
+      <% if c[status].positive? %><span class="h-full <%= color %>" style="width: <%= (c[status] * 100.0 / total).round(2) %>%"></span><% end %>
+    <% end %>
+  <% end %>
+</div>

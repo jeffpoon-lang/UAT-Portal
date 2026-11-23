@@ -1,2 +1,2 @@
-<h1 class="text-2xl font-semibold mb-6">改客戶資料</h1>
+<%= page_header "改客戶資料", crumbs: [ [ "客戶", admin_clients_path ], [ @client.name, admin_client_path(@client) ] ] %>
 <%= render "form", client: @client %>

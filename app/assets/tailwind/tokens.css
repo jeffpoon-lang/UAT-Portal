@@ -1,0 +1,28 @@
+/* Design tokens. Templates use these semantic names (bg-surface, text-fg-muted,
+   border-line, bg-accent) instead of raw palette colours, so the look can
+   change here in one place. Status colours (emerald, amber, red, violet)
+   only appear inside the badge, callout and choice components. */
+@theme {
+  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial,
+    "PingFang HK", "PingFang TC", "Microsoft JhengHei UI", "Microsoft JhengHei",
+    "Noto Sans HK", "Noto Sans CJK HK", "Noto Sans TC", sans-serif;
+  --font-mono: ui-monospace, "SF Mono", "Cascadia Mono", Menlo, Consolas, monospace;
+
+  --color-canvas: #fafafa;
+  --color-surface: #ffffff;
+  --color-subtle: #f4f4f5;
+  --color-line: #e4e4e7;
+  --color-line-strong: #d4d4d8;
+
+  --color-fg: #18181b;
+  --color-fg-muted: #52525b;
+  --color-fg-subtle: #71717a;
+
+  --color-accent: #4f46e5;
+  --color-accent-hover: #4338ca;
+  --color-accent-soft: #eef2ff;
+  --color-accent-fg: #3730a3;
+
+  --shadow-card: 0 1px 2px 0 rgb(24 24 27 / 0.05);
+  --shadow-pop: 0 10px 30px -8px rgb(24 24 27 / 0.2), 0 2px 6px -2px rgb(24 24 27 / 0.08);
+}

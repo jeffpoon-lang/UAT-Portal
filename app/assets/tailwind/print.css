@@ -1,0 +1,63 @@
+/* The maintenance report and the sign-off certificate are printed to PDF
+   from the browser. Hide the app chrome and keep colours that carry meaning. */
+@media print {
+  @page {
+    size: A4;
+    margin: 14mm 16mm;
+  }
+
+  body {
+    background: #fff !important;
+  }
+
+  .app-sidebar,
+  .app-topbar,
+  .app-tabs,
+  .app-banner,
+  .toast-region,
+  [data-print="hide"] {
+    display: none !important;
+  }
+
+  .app-shell {
+    display: block !important;
+  }
+
+  .app-main {
+    max-width: none !important;
+    padding: 0 !important;
+  }
+
+  .card,
+  .stat,
+  .table-wrap,
+  .sheet {
+    box-shadow: none !important;
+  }
+
+  .sheet {
+    border: 0 !important;
+    padding: 0 !important;
+  }
+
+  .badge,
+  .callout,
+  .progress,
+  .progress-bar,
+  .stat {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  tr,
+  li,
+  .card,
+  .stat {
+    break-inside: avoid;
+  }
+
+  a {
+    color: inherit !important;
+    text-decoration: none !important;
+  }
+}

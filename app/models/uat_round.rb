@@ -8,7 +8,15 @@ class UatRound < ApplicationRecord
   # open = 客測緊；changes_requested = 客交咗有問題要改；signed_off = 已簽，鎖死
   enum :status, { open: 0, changes_requested: 1, signed_off: 2 }, prefix: :status
 
+  # 同一個狀態，你（admin）同客睇到嘅講法唔同
+  STATUS_LABELS = {
+    admin: { "open" => "客戶測試中", "changes_requested" => "要修正", "signed_off" => "已簽署" },
+    client: { "open" => "測試中", "changes_requested" => "等 IT 修正", "signed_off" => "已簽署" }
+  }.freeze
+
   validates :number, presence: true, uniqueness: { scope: :project_id }
+
+  def status_label(audience = :admin) = STATUS_LABELS.fetch(audience).fetch(status)
 
   def all_answered? = test_results.none?(&:status_pending?)
   def all_passed? = test_results.any? && test_results.all?(&:status_pass?)

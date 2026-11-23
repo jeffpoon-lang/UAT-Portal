@@ -1,12 +1,11 @@
-<% content_for :title, "月費維護" %>
-<h1 class="text-2xl font-semibold mb-1">月費維護</h1>
-<p class="text-sm text-slate-500 mb-6"><%= Current.user.client.name %><% if @plan.quote_ref.present? %> · <span class="font-mono"><%= @plan.quote_ref %></span><% end %></p>
+<% subtitle = capture do %><%= Current.user.client&.name %><% if @plan.quote_ref.present? %> <span class="code-chip ml-1"><%= @plan.quote_ref %></span><% end %><% end %>
+<%= page_header "月費維護", subtitle: subtitle %>
 
-<dl class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-sm mb-6">
-  <div class="rounded-lg bg-white border border-slate-200 p-3"><dt class="text-xs text-slate-500">月費</dt><dd class="font-semibold"><%= hkd(@plan.monthly_fee_hkd) %></dd></div>
-  <div class="rounded-lg bg-white border border-slate-200 p-3"><dt class="text-xs text-slate-500">每月包</dt><dd class="font-semibold"><%= @plan.included_rounds %> 輪修改</dd></div>
-  <div class="rounded-lg bg-white border border-slate-200 p-3"><dt class="text-xs text-slate-500">超出每輪</dt><dd class="font-semibold"><%= hkd(@plan.extra_round_hkd) %></dd></div>
-  <div class="rounded-lg bg-white border border-slate-200 p-3"><dt class="text-xs text-slate-500">通知期</dt><dd class="font-semibold"><%= @plan.notice_days %> 日</dd></div>
+<dl class="mb-6 grid grid-cols-2 gap-3 sm:grid-cols-4">
+  <div class="stat"><dt class="stat-label">月費</dt><dd class="stat-value text-lg sm:text-xl"><%= hkd(@plan.monthly_fee_hkd) %></dd></div>
+  <div class="stat"><dt class="stat-label">每月包</dt><dd class="stat-value text-lg sm:text-xl"><%= @plan.included_rounds %> 輪修改</dd></div>
+  <div class="stat"><dt class="stat-label">超出每輪</dt><dd class="stat-value text-lg sm:text-xl"><%= hkd(@plan.extra_round_hkd) %></dd></div>
+  <div class="stat"><dt class="stat-label">通知期</dt><dd class="stat-value text-lg sm:text-xl"><%= @plan.notice_days %> 日</dd></div>
 </dl>
 
 <% if @plan.active_on?(@today) %>
@@ -14,10 +13,10 @@
 <% end %>
 
 <% if @plan.notice_given? %>
-  <div class="rounded-lg bg-red-50 border border-red-200 px-4 py-3 text-sm mb-6">
+  <%= callout(:danger, css: "mb-6") do %>
     <%= @plan.notice_by_label %>於 <%= @plan.notice_given_on %> 通知終止，合約 <strong><%= @plan.ends_on %></strong> 完結。請同我哋一齊完成以下交接；你負責嘅項目可以喺度直接剔選。
-  </div>
+  <% end %>
   <%= render "shared/handover_items", plan: @plan, namespace: :portal %>
 <% else %>
-  <p class="text-sm text-slate-500">任何一方要終止，須提前 <%= @plan.notice_days %> 日以電郵書面通知；通知期內會一齊完成交接。</p>
+  <p class="text-sm text-fg-subtle">任何一方要終止，須提前 <%= @plan.notice_days %> 日以電郵書面通知；通知期內會一齊完成交接。</p>
 <% end %>

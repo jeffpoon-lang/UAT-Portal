@@ -1,13 +1,13 @@
-<% content_for :title, "我嘅 project" %>
-<h1 class="text-2xl font-semibold mb-6">我嘅 project</h1>
+<% client = Current.user.client %>
+<%= page_header "我嘅 project", subtitle: (client ? "#{client.name}，你好" : nil) %>
+
 <% if @projects.empty? %>
-  <p class="text-slate-500">暫時未有 project。</p>
-<% end %>
-<div class="space-y-4">
-  <% @projects.each do |project| %>
-    <%= link_to portal_project_path(project), class: "block rounded-xl bg-white border border-slate-200 p-4 hover:border-indigo-300" do %>
-      <div class="font-medium mb-3"><%= project.name %></div>
-      <%= render "shared/phase_progress", project: project %>
+  <%= empty_state("暫時未有 project", icon: "folder-kanban", body: "開咗 project 之後，你可以喺度睇進度同測試。") %>
+<% else %>
+  <div class="space-y-4">
+    <% @projects.each do |project| %>
+      <%= render "shared/project_card", project: project, href: portal_project_path(project),
+            extra: (badge("輪到你測試", :accent) if project.open_round) %>
     <% end %>
-  <% end %>
-</div>
+  </div>
+<% end %>
