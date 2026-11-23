@@ -1,9 +1,13 @@
 // Cron-only Worker: it has no fetch handler and no public URL.
 // /up is Rails' health check. It doesn't touch the database, so Neon
 // can still suspend while the web service stays awake.
+// TARGET_URL comes from wrangler.toml; the default lets the code be pasted
+// into the Cloudflare dashboard without setting a variable.
+const DEFAULT_URL = "https://uat-portal-ur56.onrender.com/up";
+
 export default {
   async scheduled(_event, env, ctx) {
-    ctx.waitUntil(ping(env.TARGET_URL));
+    ctx.waitUntil(ping(env.TARGET_URL || DEFAULT_URL));
   },
 };
 

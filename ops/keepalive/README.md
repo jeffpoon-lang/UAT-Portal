@@ -20,9 +20,8 @@ CLOUDFLARE_API_TOKEN=... CLOUDFLARE_ACCOUNT_ID=... npx wrangler@4 deploy
 Or by hand in the Cloudflare dashboard:
 
 1. Workers & Pages → Create → Worker. Name it `uat-portal-keepalive`.
-2. Replace the code with `src/index.js` and deploy.
-3. Settings → Variables: add `TARGET_URL` = `https://uat-portal-ur56.onrender.com/up`.
-4. Settings → Triggers → Cron Triggers: add `*/10 * * * *`.
+2. Replace the code with `src/index.js` and deploy. The code already points at the live site; a `TARGET_URL` variable overrides it.
+3. Settings → Triggers → Cron Triggers: add `*/10 * * * *`.
 
 ## Check it works
 
