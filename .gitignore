@@ -40,3 +40,6 @@
 # Rust：build 出嚟嘅 binary 每部機唔同，唔好 commit
 /seal/target/
 /bin/uat-seal
+
+# Wrangler local dev state (ops/keepalive)
+.wrangler/
