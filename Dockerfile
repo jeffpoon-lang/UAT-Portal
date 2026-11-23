@@ -3,7 +3,7 @@
 #   docker build -t uat-portal .
 #   docker run -p 3000:3000 -e RAILS_MASTER_KEY=... -e DATABASE_URL=... uat-portal
 
-ARG RUBY_VERSION=3.3.6
+ARG RUBY_VERSION=3.3.14
 
 # ---- 1. Rust：build uat-seal ----
 FROM rust:1-slim AS seal
