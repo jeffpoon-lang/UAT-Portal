@@ -1,0 +1,12 @@
+<%= page_header "開登入帳戶", subtitle: @client.name, crumbs: [ [ "客戶", admin_clients_path ], [ @client.name, admin_client_path(@client) ] ] %>
+
+<%# 建立之後直接喺回應頁顯示密碼（唔 redirect），所以唔經 Turbo %>
+<%= form_with model: @user, url: admin_client_users_path(@client), scope: :user, class: "card card-body max-w-xl space-y-4", data: { turbo: false } do |f| %>
+  <%= render "shared/errors", record: @user %>
+  <%= f.field :email_address, "客戶登入用嘅電郵" do %><%= f.email_field :email_address, required: true, autocomplete: "off" %><% end %>
+  <%= callout(:info) do %>密碼會由系統自動產生，建立之後只會顯示一次，記得即刻複製畀客戶。客戶登入之後可以自己改密碼。<% end %>
+  <div class="flex gap-2 pt-2">
+    <%= f.submit "建立帳戶" %>
+    <%= link_to "取消", admin_client_path(@client), class: "btn btn-ghost" %>
+  </div>
+<% end %>

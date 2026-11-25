@@ -42,6 +42,7 @@ UAT Portal replaces that with one place where:
 - **Notice and handover**: recording a notice of termination sets the end date from the notice period and lists a handover checklist. Each side ticks its own items; the client cannot tick the provider's.
 - **Retention dashboard**: one row per live client with rounds used, months with extra rounds and the last ticket, flagged as *notice given*, *live but no retainer*, *often over (suggest an upgrade)*, *low usage (get in touch)* or *healthy*, plus the total monthly fees in force.
 - **AI triage**: failing UAT comments are summarised and classified as *bug*, *change request* or *unclear*, with a prompt to raise a change request when scope is creeping.
+- **Client logins**: from a client's page the developer opens a login, resets a password or removes a login. The password is generated, shown once with a ready-to-send message, and never stored in the flash, the logs or the browser cache. Anyone signed in can change their own password, which signs out their other devices.
 - **Interface**: a small design system on Tailwind v4 (semantic colour tokens, component classes, Lucide icons) with a sidebar back office for desktop and a phone-first client portal. A custom form builder gives every field a label, an inline error and `aria-invalid`, and the monthly report and sign-off certificate print cleanly to A4.
 
 ## Architecture

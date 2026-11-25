@@ -23,7 +23,8 @@ class PasswordsController < ApplicationController
       @user.sessions.destroy_all
       redirect_to new_session_path, notice: "密碼已經更新，請重新登入"
     else
-      redirect_to edit_password_path(params[:token]), alert: "兩次輸入嘅密碼唔一樣"
+      alert = @user.errors.include?(:password_confirmation) ? "兩次輸入嘅密碼唔一樣" : "新密碼最少要 #{User::MIN_PASSWORD_LENGTH} 個字"
+      redirect_to edit_password_path(params[:token]), alert: alert
     end
   end
 
