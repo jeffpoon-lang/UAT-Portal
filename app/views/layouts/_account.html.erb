@@ -2,6 +2,9 @@
   <%= icon("user", class: "size-4 shrink-0 text-fg-subtle") %>
   <span class="truncate" title="<%= Current.user.email_address %>"><%= Current.user.email_address %></span>
 </div>
+<%= link_to edit_password_change_path, class: "nav-item", "aria-current": (controller_path == "password_changes" ? "page" : nil) do %>
+  <%= icon("key-round") %><span>改密碼</span>
+<% end %>
 <%= button_to session_path, method: :delete, class: "nav-item w-full cursor-pointer", form_class: "contents" do %>
   <%= icon("log-out") %><span>登出</span>
 <% end %>

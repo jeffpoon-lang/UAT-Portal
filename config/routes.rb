@@ -1,6 +1,7 @@
 Rails.application.routes.draw do
   resource :session
   resources :passwords, param: :token
+  resource :password_change, only: [ :edit, :update ]
 
   namespace :admin do
     root "dashboard#show"
@@ -9,6 +10,10 @@ Rails.application.routes.draw do
         post :give_notice
         post :withdraw_notice
       end
+      resources :users, only: [ :new, :create ]
+    end
+    resources :users, only: :destroy do
+      post :reset_password, on: :member
     end
     resources :handover_items, only: :update
     resources :monthly_updates, only: :create

@@ -1,0 +1,31 @@
+<%# locals: (client:) -%>
+<% users = client.users.role_client.includes(:sessions).order(:email_address) %>
+<section class="card" aria-labelledby="logins-heading">
+  <div class="card-header">
+    <h2 id="logins-heading" class="section-title">登入帳戶</h2>
+    <%= link_to new_admin_client_user_path(client), class: "btn btn-secondary btn-sm" do %><%= icon("plus") %>開帳戶<% end %>
+  </div>
+  <% if users.empty? %>
+    <p class="card-body text-sm text-fg-subtle">未有登入帳戶。開咗之後客戶就可以登入 portal 測試同開 ticket。</p>
+  <% else %>
+    <ul class="divide-y divide-line">
+      <% users.each do |user| %>
+        <% last = user.sessions.map(&:created_at).max %>
+        <li class="flex flex-wrap items-center gap-x-3 gap-y-2 px-4 py-3 sm:px-5">
+          <div class="min-w-0 flex-1">
+            <p class="truncate text-sm font-medium text-fg"><%= user.email_address %></p>
+            <p class="mt-0.5 text-xs text-fg-subtle"><%= last ? safe_join([ "最後登入 ", time_ago_zh(last) ]) : "未登入過" %></p>
+          </div>
+          <div class="flex gap-1">
+            <%# 新密碼直接喺回應頁顯示，所以唔經 Turbo，用 confirm controller 代替 turbo_confirm %>
+            <%= button_to reset_password_admin_user_path(user), class: "btn btn-ghost btn-sm",
+                  form: { data: { turbo: false, controller: "confirm", action: "submit->confirm#check",
+                                  confirm_message_value: "重設 #{user.email_address} 嘅密碼？舊密碼會即刻失效，佢已登入嘅裝置會被登出。" } } do %><%= icon("key-round") %>重設密碼<% end %>
+            <%= button_to admin_user_path(user), method: :delete, class: "btn btn-ghost btn-sm btn-icon hover:text-red-700", "aria-label": "刪除 #{user.email_address}",
+                  data: { turbo_confirm: "刪除 #{user.email_address} 嘅登入帳戶？佢之後唔可以再登入。" } do %><%= icon("trash-2") %><% end %>
+          </div>
+        </li>
+      <% end %>
+    </ul>
+  <% end %>
+</section>
