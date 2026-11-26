@@ -8,6 +8,7 @@
     <%= f.field :max_uat_rounds, "UAT 包幾多 round" do %><%= f.number_field :max_uat_rounds, min: 1 %><% end %>
     <%= f.field :maintenance_start_on, "Maintenance 開始日", hint: "即係 handover 當日", optional: true do %><%= f.date_field :maintenance_start_on %><% end %>
   </div>
+  <%= f.field :support_notes, "支援資料", optional: true, hint: "例如緊急聯絡方法、手冊喺邊度。客戶喺 portal「系統資料」頁睇到，唔好寫密碼。" do %><%= f.text_area :support_notes, rows: 4 %><% end %>
   <div class="flex gap-2 pt-2">
     <%= f.submit "儲存" %>
     <%= link_to "取消", project.persisted? ? admin_project_path(project) : admin_projects_path, class: "btn btn-ghost" %>

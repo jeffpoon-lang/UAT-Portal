@@ -29,6 +29,10 @@ Rails.application.routes.draw do
           post :reject
         end
       end
+      resources :external_sign_offs, except: [ :index, :show ] do
+        get :document, on: :member
+      end
+      resources :system_links, except: [ :index, :show ]
     end
     resources :sign_offs, only: [ :index, :show ] do
       post :verify, on: :collection
@@ -49,9 +53,14 @@ Rails.application.routes.draw do
         resources :test_results, only: :update
       end
       resources :tickets, only: [ :new, :create, :show ]
+      resources :external_sign_offs, only: [] do
+        get :document, on: :member
+      end
+      resource :system, only: :show, controller: "systems"
     end
     resources :sign_offs, only: :show
     resource :retainer, only: :show
+    resource :report, only: :show
     resources :handover_items, only: :update
   end
 

@@ -13,6 +13,35 @@
   <% end %>
 <% end %>
 
+<% if @project.uat_accepted? %>
+  <%= callout(:success, css: "mb-6") do %>
+    <p class="font-medium">UAT 已於 <%= @project.uat_accepted_on.strftime("%Y-%m-%d") %> 驗收完成</p>
+    <% if @project.phase_maintenance? %><p class="mt-0.5">而家係 Maintenance 階段：有問題或者要改動，可以喺下面開 ticket。</p><% end %>
+  <% end %>
+<% end %>
+
+<% show_system = @project.system_links.any? || @project.support_notes.present? %>
+<% report_client = @project.client %>
+<% show_report = report_client.has_monthly_reports? %>
+<% if show_system || show_report %>
+  <div class="mb-8 grid gap-3 sm:grid-cols-2">
+    <% if show_system %>
+      <%= link_to portal_project_system_path(@project), class: "card card-link flex items-center gap-3 p-4" do %>
+        <span class="grid size-10 shrink-0 place-items-center rounded-lg bg-accent-soft text-accent"><%= icon("link", class: "size-5") %></span>
+        <span class="min-w-0 flex-1"><span class="block font-medium text-fg">系統資料</span><span class="block text-sm text-fg-muted">網址、帳戶同支援資料</span></span>
+        <%= icon("chevron-right", class: "size-4 shrink-0 text-fg-subtle") %>
+      <% end %>
+    <% end %>
+    <% if show_report %>
+      <%= link_to portal_report_path(client_id: (report_client.id if Current.user.role_admin?)), class: "card card-link flex items-center gap-3 p-4" do %>
+        <span class="grid size-10 shrink-0 place-items-center rounded-lg bg-accent-soft text-accent"><%= icon("chart-column", class: "size-5") %></span>
+        <span class="min-w-0 flex-1"><span class="block font-medium text-fg">月報</span><span class="block text-sm text-fg-muted">每月處理記錄同應付金額</span></span>
+        <%= icon("chevron-right", class: "size-4 shrink-0 text-fg-subtle") %>
+      <% end %>
+    <% end %>
+  </div>
+<% end %>
+
 <% if @project.accepts_tickets? || @project.tickets.any? %>
   <section class="mb-8 space-y-4" aria-labelledby="tickets-heading">
     <h2 id="tickets-heading" class="section-title">Maintenance</h2>
@@ -34,6 +63,14 @@
   </section>
 <% end %>
 
+<% if @project.external_sign_offs.any? %>
+  <section class="mb-8" aria-labelledby="sign-offs-heading">
+    <h2 id="sign-offs-heading" class="section-title mb-1">驗收簽署</h2>
+    <p class="mb-3 text-sm text-fg-muted">喺 portal 以外簽咗嘅驗收聲明同簽署文件。</p>
+    <%= render "shared/external_sign_offs", project: @project, sign_offs: @project.external_sign_offs, audience: :client %>
+  </section>
+<% end %>
+
 <% if @project.uat_rounds.any? %>
   <section class="mb-8" aria-labelledby="rounds-heading">
     <h2 id="rounds-heading" class="section-title mb-3">UAT 記錄</h2>
@@ -48,14 +85,17 @@
 <% if @project.test_cases.any? %>
   <details class="card group">
     <summary class="flex cursor-pointer list-none items-center justify-between gap-3 px-4 py-3 sm:px-5 [&::-webkit-details-marker]:hidden">
-      <span class="section-title">Test cases <span class="ml-1 text-sm font-normal text-fg-subtle tabular"><%= @project.test_cases.size %> 條</span></span>
+      <span class="section-title"><%= @project.uat_accepted? ? "驗收清單" : "Test cases" %> <span class="ml-1 text-sm font-normal text-fg-subtle tabular"><%= @project.test_cases.size %> 條</span></span>
       <%= icon("chevron-down", class: "size-4 text-fg-subtle transition-transform group-open:rotate-180") %>
     </summary>
+    <% if @project.uat_accepted? %>
+      <p class="border-t border-line px-4 py-3 text-sm text-fg-muted sm:px-5">UAT 用過嘅 test case。以後改完嘢，會用返呢份清單重新檢查，確保冇整爛其他功能。</p>
+    <% end %>
     <ul class="divide-y divide-line border-t border-line">
       <% @project.test_cases.each do |tc| %>
         <li class="px-4 py-3 sm:px-5">
           <p class="flex items-baseline gap-2"><span class="code-chip shrink-0"><%= tc.code %></span><span class="text-sm font-medium text-fg"><%= tc.title %></span></p>
-          <% if tc.expected.present? %><p class="mt-1 text-sm text-fg-muted">預期：<%= tc.expected %></p><% end %>
+          <% if tc.expected.present? %><p class="mt-1 text-sm whitespace-pre-line text-fg-muted">預期：<%= tc.expected %></p><% end %>
         </li>
       <% end %>
     </ul>

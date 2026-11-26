@@ -82,6 +82,34 @@ namespace :dev do
       site.tickets.create!(opened_by: yoga_user, title: "改首頁 banner 文字 #{i + 1}", body: "換成聖誕優惠字眼")
     end
 
+    # UAT signed outside the portal, system links and a monthly update for the site in maintenance
+    if site.external_sign_offs.empty?
+      signed = Rails.root.join("test/fixtures/files/signed.pdf")
+      site.external_sign_offs.create!(position: 1, scope: "A", title: "內容驗收", signer_name: "陳大文",
+                                      signed_on: 2.months.ago.to_date, countersigned_by: "Jeff Poon",
+                                      statement: "我已逐頁閱讀網站文案同圖片，確認內容準確，同意以此版本上線。")
+      site.external_sign_offs.create!(position: 2, scope: "final", title: "最終驗收", signer_name: "陳大文",
+                                      signed_on: 7.weeks.ago.to_date, countersigned_by: "Jeff Poon", final: true,
+                                      statement: "以上各節已完成，本系統符合驗收要求，同意上線。",
+                                      document: { io: File.open(signed), filename: "UAT-最終驗收-已簽.pdf", content_type: "application/pdf" })
+    end
+    if site.system_links.empty?
+      [
+        [ :site, "品牌網站", "https://demoyoga.example", "Demo Yoga（hello@demoyoga.example）", nil ],
+        [ :site, "課程報名表", "https://demoyoga.example/join", nil, "報名會即時寄 email 通知" ],
+        [ :admin, "網站後台", "https://demoyoga.example/admin", "Demo Yoga", "連續 5 次錯密碼會鎖 15 分鐘" ],
+        [ :service, "網域同 DNS（Cloudflare）", "https://dash.cloudflare.com", "Demo Yoga", nil ],
+        [ :doc, "Admin 使用手冊", "https://docs.example/demoyoga-admin", nil, nil ]
+      ].each_with_index do |(kind, label, url, owner, note), i|
+        site.system_links.create!(kind: kind, label: label, url: url, account_owner: owner, note: note, position: i + 1)
+      end
+      site.update!(support_notes: "一般問題請喺 portal 開 ticket，工作日 24 小時內回覆。\n網站完全打唔開：WhatsApp 5123 4567（24 小時）。")
+    end
+    MonthlyUpdate.find_or_create_by!(client: yoga, month: Date.current.beginning_of_month) do |u|
+      u.done_summary = "更新咗首頁 banner 同聖誕優惠字眼\n修正報名表喺 iPhone 嘅排版"
+      u.next_steps = "加 FAQ 頁\n一月之前檢查 SSL 證書續期"
+    end
+
     # A retainer under notice, with part of the handover done
     tutor = Client.find_or_create_by!(code: "DEMOTUTOR") do |c|
       c.name = "Demo 補習社"

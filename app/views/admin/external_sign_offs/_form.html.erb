@@ -1,0 +1,42 @@
+<%# locals: (project:, sign_off:) -%>
+<%= form_with model: [ :admin, project, sign_off ], class: "card card-body max-w-2xl space-y-4" do |f| %>
+  <%= render "shared/errors", record: sign_off %>
+  <%= callout(:info) do %>
+    用嚟記錄喺 portal 以外簽咗嘅 UAT 聲明，例如紙本或者 PDF 簽名。呢度只係記錄，唔會入 sign-off 嘅驗證鏈。
+  <% end %>
+  <div class="grid gap-4 sm:grid-cols-[6rem_8rem_1fr]">
+    <%= f.field :position, "次序" do %><%= f.number_field :position, min: 0 %><% end %>
+    <%= f.field :scope, "範圍", optional: true do %><%= f.text_field :scope, placeholder: "例如 A、B+C", class: "font-mono" %><% end %>
+    <%= f.field :title, "標題" do %><%= f.text_field :title, placeholder: "例如 內容驗收" %><% end %>
+  </div>
+  <div class="grid gap-4 sm:grid-cols-2">
+    <%= f.field :signer_name, "簽署人" do %><%= f.text_field :signer_name %><% end %>
+    <%= f.field :signed_on, "簽署日期" do %><%= f.date_field :signed_on, max: Date.current %><% end %>
+  </div>
+  <%= f.field :countersigned_by, "副簽", optional: true, hint: "例如交付方簽名確認" do %><%= f.text_field :countersigned_by %><% end %>
+  <%= f.field :statement, "聲明內容", optional: true, hint: "照抄簽咗嗰份文件嘅聲明，客戶喺 portal 睇到" do %><%= f.text_area :statement, rows: 5 %><% end %>
+  <div class="field">
+    <span class="label">簽咗嘅文件<span class="label-optional">（可選）</span></span>
+    <div class="flex flex-wrap items-center gap-3">
+      <%= render "ui/upload_button", f: f, method: :document, text: (sign_off.document.attached? ? "換文件" : "上載 PDF"),
+                 accept: "application/pdf,image/png,image/jpeg", multiple: false, icon_name: "file-text" %>
+      <% if sign_off.document.attached? && sign_off.persisted? %>
+        <%= link_to sign_off.document.filename.to_s, document_admin_project_external_sign_off_path(project, sign_off), class: "link text-sm", target: "_blank", rel: "noopener", data: { turbo: false } %>
+      <% end %>
+    </div>
+    <p class="hint">PDF、PNG 或者 JPG，唔大過 10MB。客戶登入之後可以下載。</p>
+    <% if sign_off.errors[:document].any? %><p class="field-error"><%= sign_off.errors[:document].to_sentence %></p><% end %>
+  </div>
+  <label class="flex items-start gap-3 rounded-lg border border-line p-3">
+    <%= f.check_box :final, class: "mt-0.5" %>
+    <span class="text-sm">
+      <span class="font-medium text-fg">呢份係最終驗收</span>
+      <span class="block text-fg-muted">UAT 當完成，project 唔會再開 round；客戶 portal 會顯示驗收日期。</span>
+    </span>
+  </label>
+  <%= f.field :note, "備註", optional: true do %><%= f.text_area :note, rows: 2 %><% end %>
+  <div class="flex gap-2 pt-2">
+    <%= f.submit "儲存" %>
+    <%= link_to "取消", admin_project_path(project, anchor: "external-sign-offs"), class: "btn btn-ghost" %>
+  </div>
+<% end %>

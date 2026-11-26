@@ -1,0 +1,18 @@
+<% current = Date.current.beginning_of_month %>
+<div data-print="hide">
+  <%= page_header "月報", subtitle: "每月處理咗嘅 ticket、用咗幾耐同應付金額。可以列印或者存做 PDF。" %>
+  <%= form_with url: portal_report_path, method: :get, class: "card card-body mb-6 flex flex-wrap items-end gap-3" do %>
+    <% if Current.user.role_admin? %><%= hidden_field_tag :client_id, @client.id %><% end %>
+    <div class="min-w-40 flex-1 sm:flex-none">
+      <%= label_tag :month, "月份", class: "label" %>
+      <%= select_tag :month, options_for_select(@months.map { |m| [ m.strftime("%Y 年 %-m 月") + (m == current ? "（進行中）" : ""), m.strftime("%Y-%m") ] }, @month.strftime("%Y-%m")), class: "select" %>
+    </div>
+    <button class="btn btn-primary">睇月報</button>
+    <span data-controller="print"><button type="button" class="btn btn-secondary" data-action="print#print"><%= icon("printer") %>列印／存 PDF</button></span>
+  <% end %>
+  <% if @month == current %>
+    <%= callout(:info, css: "mb-6") do %>今個月仲未完，數字會隨住處理進度更新。<% end %>
+  <% end %>
+</div>
+
+<%= render "shared/maintenance_report", report: @report, audience: :client %>

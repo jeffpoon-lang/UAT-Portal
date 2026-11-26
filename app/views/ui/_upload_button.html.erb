@@ -1,6 +1,6 @@
-<%# 一個似掣嘅「加截圖」，揀咗幾多張會顯示出嚟。原生 file input 嘅字係英文，所以收埋 %>
-<%# locals: (f:, method: :screenshots, text: "加截圖") -%>
+<%# 一個似掣嘅「加截圖」，揀咗幾多個檔案會顯示出嚟。原生 file input 嘅字係英文，所以收埋 %>
+<%# locals: (f:, method: :screenshots, text: "加截圖", accept: "image/*", multiple: true, icon_name: "image-plus") -%>
 <label class="btn btn-secondary has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-accent" data-controller="upload" data-upload-empty-value="<%= text %>">
-  <%= icon("image-plus") %><span data-upload-target="label"><%= text %></span>
-  <%= f.file_field method, multiple: true, accept: "image/*", class: "sr-only", data: { upload_target: "input", action: "upload#update" } %>
+  <%= icon(icon_name) %><span data-upload-target="label"><%= text %></span>
+  <%= f.file_field method, multiple: multiple, accept: accept, class: "sr-only", data: { upload_target: "input", action: "upload#update" } %>
 </label>

@@ -10,7 +10,8 @@ module NavigationHelper
       ] ],
       [ "交付", [
         NavItem.new("Projects", admin_projects_path, "folder-kanban",
-                    %w[admin/projects admin/uat_rounds admin/test_cases admin/change_requests]),
+                    %w[admin/projects admin/uat_rounds admin/test_cases admin/change_requests
+                       admin/external_sign_offs admin/system_links]),
         NavItem.new("客戶", admin_clients_path, "users", %w[admin/clients admin/retainer_plans admin/handover_items]),
         NavItem.new("Sign-offs", admin_sign_offs_path, "file-check-2", %w[admin/sign_offs])
       ] ],
@@ -24,8 +25,13 @@ module NavigationHelper
 
   def portal_nav_items(user = Current.user)
     items = [ NavItem.new("我嘅 project", portal_projects_path, "folder-kanban",
-                          %w[portal/projects portal/uat_rounds portal/test_results portal/tickets portal/sign_offs]) ]
-    if user.client&.retainer_plan
+                          %w[portal/projects portal/uat_rounds portal/test_results portal/tickets portal/sign_offs
+                             portal/external_sign_offs portal/systems]) ]
+    client = user.client
+    if client&.has_monthly_reports?
+      items << NavItem.new("月報", portal_report_path, "chart-column", %w[portal/reports])
+    end
+    if client&.retainer_plan
       items << NavItem.new("月費維護", portal_retainer_path, "wallet", %w[portal/retainers portal/handover_items])
     end
     items

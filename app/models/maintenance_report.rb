@@ -31,6 +31,13 @@ class MaintenanceReport
     logs.group_by(&:ticket).transform_values { |ls| ls.sum(&:minutes) }.sort_by { |t, _| t.doc_number }
   end
 
+  # "2026-11" → 2026-11-01；格式唔啱就 nil
+  def self.parse_month(value)
+    Date.strptime(value.to_s, "%Y-%m") if value.to_s.match?(/\A\d{4}-\d{2}\z/)
+  rescue Date::Error
+    nil
+  end
+
   def self.format_minutes(minutes)
     h, m = minutes.divmod(60)
     [ (h.positive? ? "#{h} 小時" : nil), (m.positive? || h.zero? ? "#{m} 分鐘" : nil) ].compact.join(" ")

@@ -1,0 +1,40 @@
+<%# 系統外簽署記錄：admin 有改／刪掣，客戶只睇同下載文件 %>
+<%# locals: (project:, sign_offs:, audience:) -%>
+<ul class="list">
+  <% sign_offs.each do |so| %>
+    <li class="px-4 py-3 sm:px-5">
+      <div class="flex flex-wrap items-start gap-x-3 gap-y-2">
+        <div class="min-w-0 flex-1">
+          <p class="flex flex-wrap items-center gap-2">
+            <% if so.scope.present? %><span class="code-chip"><%= so.scope %></span><% end %>
+            <span class="font-medium text-fg"><%= so.title %></span>
+            <% if so.final? %><%= badge("最終驗收", :success, icon: "circle-check") %><% end %>
+          </p>
+          <p class="mt-1 text-xs text-fg-subtle tabular">
+            <%= so.signer_name %> 簽署 · <%= so.signed_on.strftime("%Y-%m-%d") %><% if so.countersigned_by.present? %> · 副簽：<%= so.countersigned_by %><% end %>
+          </p>
+        </div>
+        <div class="flex shrink-0 items-center gap-1">
+          <% if so.document.attached? %>
+            <% path = audience == :admin ? document_admin_project_external_sign_off_path(project, so) : document_portal_project_external_sign_off_path(project, so) %>
+            <%= link_to path, class: "btn btn-secondary btn-sm", target: "_blank", rel: "noopener", data: { turbo: false } do %><%= icon("file-text") %>簽署文件<% end %>
+          <% end %>
+          <% if audience == :admin %>
+            <%= link_to edit_admin_project_external_sign_off_path(project, so), class: "btn btn-ghost btn-sm btn-icon", "aria-label": "改「#{so.title}」" do %><%= icon("pencil") %><% end %>
+            <%= button_to admin_project_external_sign_off_path(project, so), method: :delete, form_class: "inline", class: "btn btn-ghost btn-sm btn-icon hover:text-red-700",
+                  "aria-label": "刪「#{so.title}」", data: { turbo_confirm: "確定刪「#{so.title}」？上載咗嘅文件都會一併刪除。" } do %><%= icon("trash-2") %><% end %>
+          <% end %>
+        </div>
+      </div>
+      <% if so.statement.present? %>
+        <details class="group mt-2">
+          <summary class="inline-flex cursor-pointer list-none items-center gap-1 text-xs font-medium text-fg-muted hover:text-fg [&::-webkit-details-marker]:hidden">
+            聲明內容<%= icon("chevron-down", class: "size-3.5 transition-transform group-open:rotate-180") %>
+          </summary>
+          <p class="prose-text mt-2 rounded-lg bg-subtle px-3 py-2.5 text-fg-muted"><%= so.statement %></p>
+        </details>
+      <% end %>
+      <% if so.note.present? %><p class="prose-text mt-2 text-fg-muted"><%= so.note %></p><% end %>
+    </li>
+  <% end %>
+</ul>

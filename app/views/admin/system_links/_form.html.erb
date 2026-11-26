@@ -1,0 +1,16 @@
+<%# locals: (project:, link:) -%>
+<%= form_with model: [ :admin, project, link ], class: "card card-body max-w-2xl space-y-4" do |f| %>
+  <%= render "shared/errors", record: link %>
+  <div class="grid gap-4 sm:grid-cols-[1fr_6rem]">
+    <%= f.field :kind, "類別" do %><%= f.select :kind, SystemLink::KINDS.map { |k| [ SystemLink::KIND_LABELS[k], k ] } %><% end %>
+    <%= f.field :position, "次序" do %><%= f.number_field :position, min: 0 %><% end %>
+  </div>
+  <%= f.field :label, "名稱", hint: "例如「Community 問卷」「Admin 後台」「Cloudflare 帳戶」" do %><%= f.text_field :label %><% end %>
+  <%= f.field :url, "網址", optional: true do %><%= f.url_field :url, placeholder: "https://", class: "font-mono" %><% end %>
+  <%= f.field :account_owner, "帳戶喺邊個名下", optional: true, hint: "例如「Carey（AcareDEMY）」。唔好喺度寫密碼。" do %><%= f.text_field :account_owner %><% end %>
+  <%= f.field :note, "備註", optional: true do %><%= f.text_area :note, rows: 3 %><% end %>
+  <div class="flex gap-2 pt-2">
+    <%= f.submit "儲存" %>
+    <%= link_to "取消", admin_project_path(project, anchor: "system-links"), class: "btn btn-ghost" %>
+  </div>
+<% end %>
