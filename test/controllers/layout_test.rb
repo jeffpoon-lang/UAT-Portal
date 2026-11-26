@@ -21,6 +21,8 @@ class LayoutTest < ActionDispatch::IntegrationTest
       edit_admin_project_path(@project) => "Projects",
       new_admin_project_test_case_path(@project) => "Projects",
       new_admin_project_change_request_path(@project) => "Projects",
+      new_admin_project_external_sign_off_path(@project) => "Projects",
+      new_admin_project_system_link_path(@project) => "Projects",
       admin_tickets_path => "Tickets",
       admin_maintenance_report_path => "月尾報告",
       admin_retention_path => "Retention",
@@ -47,6 +49,16 @@ class LayoutTest < ActionDispatch::IntegrationTest
     assert_select ".app-tabs [aria-current=page]", text: /月費維護/
     get portal_project_path(@project)
     assert_select ".app-tabs [aria-current=page]", text: /我嘅 project/
+  end
+
+  test "the maintenance pages in the portal have titles and keep the project tab current" do
+    @project.update!(phase: :maintenance)
+    sign_in_as users(:two)
+    get portal_project_system_path(@project)
+    assert_select "title", "系統資料 · UAT Portal"
+    assert_select ".app-tabs [aria-current=page]", text: /我嘅 project/
+    get portal_report_path
+    assert_select "title", "月報 · UAT Portal"
   end
 
   test "an admin looking at the portal sees a preview banner" do

@@ -32,5 +32,5 @@ class Admin::ProjectsController < Admin::BaseController
 
   private
     def set_project = @project = Project.find(params[:id])
-    def project_params = params.expect(project: [ :client_id, :name, :phase, :max_uat_rounds, :maintenance_start_on ])
+    def project_params = params.expect(project: [ :client_id, :name, :phase, :max_uat_rounds, :maintenance_start_on, :support_notes ])
 end

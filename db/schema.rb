@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_17_120300) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_26_120100) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -71,6 +71,22 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_17_120300) do
     t.index ["code"], name: "index_clients_on_code", unique: true
   end
 
+  create_table "external_sign_offs", force: :cascade do |t|
+    t.bigint "project_id", null: false
+    t.integer "position", default: 0, null: false
+    t.string "scope"
+    t.string "title", null: false
+    t.text "statement"
+    t.string "signer_name", null: false
+    t.date "signed_on", null: false
+    t.string "countersigned_by"
+    t.boolean "final", default: false, null: false
+    t.text "note"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["project_id"], name: "index_external_sign_offs_on_project_id"
+  end
+
   create_table "handover_items", force: :cascade do |t|
     t.bigint "retainer_plan_id", null: false
     t.integer "position", default: 0, null: false
@@ -103,6 +119,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_17_120300) do
     t.date "maintenance_start_on"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.text "support_notes"
     t.index ["client_id"], name: "index_projects_on_client_id"
   end
 
@@ -147,6 +164,19 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_17_120300) do
     t.index ["project_id"], name: "index_sign_offs_on_project_id"
     t.index ["signed_by_id"], name: "index_sign_offs_on_signed_by_id"
     t.index ["uat_round_id"], name: "index_sign_offs_on_uat_round_id", unique: true
+  end
+
+  create_table "system_links", force: :cascade do |t|
+    t.bigint "project_id", null: false
+    t.integer "kind", default: 0, null: false
+    t.integer "position", default: 0, null: false
+    t.string "label", null: false
+    t.string "url"
+    t.string "account_owner"
+    t.text "note"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["project_id"], name: "index_system_links_on_project_id"
   end
 
   create_table "test_cases", force: :cascade do |t|
@@ -235,6 +265,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_17_120300) do
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "change_requests", "projects"
+  add_foreign_key "external_sign_offs", "projects"
   add_foreign_key "handover_items", "retainer_plans"
   add_foreign_key "handover_items", "users", column: "done_by_id"
   add_foreign_key "monthly_updates", "clients"
@@ -244,6 +275,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_17_120300) do
   add_foreign_key "sign_offs", "projects"
   add_foreign_key "sign_offs", "uat_rounds"
   add_foreign_key "sign_offs", "users", column: "signed_by_id"
+  add_foreign_key "system_links", "projects"
   add_foreign_key "test_cases", "projects"
   add_foreign_key "test_results", "test_cases"
   add_foreign_key "test_results", "uat_rounds"

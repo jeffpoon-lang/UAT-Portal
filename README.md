@@ -37,7 +37,9 @@ UAT Portal replaces that with one place where:
 - **Sealed sign-off**: when every test passes, the client signs with their full name. The results are frozen as canonical JSON, sealed by Rust and chained to the previous sign-off. The record is read-only and numbered `UAT-CLIENT-001`.
 - **Chain verification**: one button re-checks every sign-off from the first to the last and reports exactly which record broke and why.
 - **Maintenance tickets**: available after launch, with priority, screenshots and time logs that the client can read.
-- **Monthly maintenance report**: tickets opened and resolved, time spent per ticket and work done, printable to PDF.
+- **Monthly maintenance report**: tickets opened and resolved, time spent per ticket and work done, printable to PDF. Clients in maintenance get a 月報 tab in the portal and pick any month since maintenance began; the developer can preview the client's copy from the admin report.
+- **Sign-offs made outside the portal**: when UAT was signed on paper or as a PDF, the developer records each statement (scope, signer, date, countersignature, text) and uploads the signed file. Marking one as the final acceptance closes UAT, so no more rounds are offered, and the client's project page shows the acceptance date and the statements. These records sit beside the sealed sign-offs, not in the hash chain, because their content was not frozen by the system.
+- **System info page**: per project, the live URLs, admin back offices, third-party accounts (and whose name each is under), manuals and support contacts, grouped for the client on one page.
 - **Retainer**: each client can have a monthly plan (fee, change rounds included, price per extra round, notice period). A *change* ticket uses one round; a *fault* ticket uses none. Once the month's rounds are used up, the client must tick a confirmation before opening another change, so extra charges are agreed in advance. The monthly report adds the fee, rounds used, extra rounds and the amount due, plus a "done this month / suggested next" note.
 - **Notice and handover**: recording a notice of termination sets the end date from the notice period and lists a handover checklist. Each side ticks its own items; the client cannot tick the provider's.
 - **Retention dashboard**: one row per live client with rounds used, months with extra rounds and the last ticket, flagged as *notice given*, *live but no retainer*, *often over (suggest an upgrade)*, *low usage (get in touch)* or *healthy*, plus the total monthly fees in force.
@@ -128,7 +130,8 @@ The seal is the one piece whose correctness the whole sign-off depends on, so I 
 - **Only the client can sign**: the admin cannot sign on a client's behalf. Signed rounds and their results cannot be edited.
 - **No demo accounts in production**: production seeds create nothing unless `ADMIN_EMAIL` and `ADMIN_PASSWORD` are set. This was caught while testing a production boot, where the first version would have created a demo admin with a known password.
 - **Untrusted model output**: AI results are only accepted for test case codes that exist and categories on an allow-list; anything else is dropped. Client comments are sent as data, and the prompt tells the model not to follow instructions inside them.
-- **Uploads**: screenshots must be images and at most 10 MB each.
+- **Uploads**: screenshots must be images and at most 10 MB each. Signed sign-off files must be PDF, PNG or JPEG (never SVG or HTML) and are served through a controller that checks the client first, with `Cache-Control: no-store`, instead of a public blob URL.
+- **Links shown to clients**: system info URLs must be `http://` or `https://`, so a `javascript:` link cannot reach the portal, and they open with `rel="noopener noreferrer"`.
 - **Scanning**: Brakeman reports 0 warnings, bundler-audit and importmap audit report no known vulnerabilities, and all three run in CI.
 
 ## Tests

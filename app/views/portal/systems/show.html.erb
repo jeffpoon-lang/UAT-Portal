@@ -1,0 +1,43 @@
+<%= page_header "系統資料", subtitle: @project.name, crumbs: [ [ "我嘅 project", portal_projects_path ], [ @project.name, portal_project_path(@project) ] ] %>
+
+<% if @groups.empty? && @project.support_notes.blank? %>
+  <%= empty_state("未有系統資料", body: "整理好之後，系統網址、帳戶喺邊個名下同支援資料都會喺度列出。") %>
+<% else %>
+  <div class="space-y-8">
+    <% @groups.each do |kind, links| %>
+      <section aria-labelledby="kind-<%= kind %>">
+        <h2 id="kind-<%= kind %>" class="section-title mb-3 flex items-center gap-2"><%= icon(SystemLink::KIND_ICONS.fetch(kind), class: "size-4 text-fg-subtle") %><%= SystemLink::KIND_LABELS.fetch(kind) %></h2>
+        <ul class="list">
+          <% links.each do |link| %>
+            <li class="px-4 py-3 sm:px-5">
+              <% if link.url %>
+                <%= link_to link.url, target: "_blank", rel: "noopener noreferrer", class: "group flex items-start gap-3" do %>
+                  <span class="min-w-0 flex-1">
+                    <span class="block font-medium text-fg group-hover:text-accent"><%= link.label %></span>
+                    <span class="block truncate font-mono text-xs text-fg-subtle"><%= link.url %></span>
+                  </span>
+                  <%= icon("external-link", class: "mt-1 size-4 shrink-0 text-fg-subtle group-hover:text-accent") %>
+                <% end %>
+              <% else %>
+                <p class="font-medium text-fg"><%= link.label %></p>
+              <% end %>
+              <% if link.account_owner.present? %>
+                <p class="mt-1.5 text-sm text-fg-muted"><span class="text-fg-subtle">帳戶：</span><%= link.account_owner %></p>
+              <% end %>
+              <% if link.note.present? %><p class="prose-text mt-1.5 text-fg-muted"><%= link.note %></p><% end %>
+            </li>
+          <% end %>
+        </ul>
+      </section>
+    <% end %>
+
+    <% if @project.support_notes.present? %>
+      <section class="card card-body" aria-labelledby="support-heading">
+        <h2 id="support-heading" class="section-title mb-2 flex items-center gap-2"><%= icon("life-buoy", class: "size-4 text-fg-subtle") %>支援資料</h2>
+        <p class="prose-text"><%= @project.support_notes %></p>
+      </section>
+    <% end %>
+
+    <p class="flex items-start gap-2 text-xs text-fg-subtle"><%= icon("key-round", class: "mt-0.5 size-3.5 shrink-0") %>呢頁唔會顯示任何密碼。請用你自己嘅密碼管理工具保管登入資料。</p>
+  </div>
+<% end %>

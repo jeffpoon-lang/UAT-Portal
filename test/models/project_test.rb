@@ -21,4 +21,26 @@ class ProjectTest < ActiveSupport::TestCase
     project.max_uat_rounds = 0
     assert_not project.valid?
   end
+
+  test "a final sign-off outside the portal accepts UAT on its date" do
+    project = projects(:yoga_course)
+    project.external_sign_offs.create!(title: "內容驗收", signer_name: "陳大文", signed_on: "2026-10-20")
+    assert_not project.reload.uat_accepted?
+
+    project.external_sign_offs.create!(title: "最終驗收", signer_name: "陳大文", signed_on: "2026-11-01", final: true)
+    project.reload
+    assert project.uat_accepted?
+    assert_equal Date.new(2026, 11, 1), project.uat_accepted_on
+    assert_raises(UatRound::NotAllowed) { project.open_next_round! }
+  end
+
+  test "system links are grouped by kind in a fixed order" do
+    project = projects(:yoga_course)
+    project.system_links.create!(kind: "doc", label: "手冊")
+    project.system_links.create!(kind: "site", label: "官網", position: 2)
+    project.system_links.create!(kind: "site", label: "報名表", position: 1)
+    groups = SystemLink.grouped(project.system_links.reload)
+    assert_equal %w[site doc], groups.keys
+    assert_equal %w[報名表 官網], groups["site"].map(&:label)
+  end
 end

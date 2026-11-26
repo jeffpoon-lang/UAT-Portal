@@ -5,6 +5,8 @@ class Project < ApplicationRecord
   has_many :change_requests, -> { order(:created_at) }, dependent: :destroy
   has_many :sign_offs, dependent: :restrict_with_error
   has_many :tickets, -> { order(created_at: :desc) }, dependent: :destroy
+  has_many :external_sign_offs, -> { order(:position, :signed_on, :id) }, dependent: :destroy
+  has_many :system_links, dependent: :destroy
 
   # 跟 SOP 嘅交付階段，次序唔好改（存落 DB 嘅係數字）
   PHASES = %w[requirement design development sat uat launch maintenance].freeze
@@ -32,9 +34,21 @@ class Project < ApplicationRecord
   def latest_round = uat_rounds.last
   def signed_off? = uat_rounds.any?(&:status_signed_off?)
 
+  # UAT 喺系統以外簽咗最終驗收（見 ExternalSignOff）
+  def final_external_sign_off = external_sign_offs.select(&:final?).max_by(&:signed_on)
+  def accepted_externally? = final_external_sign_off.present?
+  def uat_accepted? = signed_off? || accepted_externally?
+
+  # UAT 驗收完成嗰日：系統內 sign-off 或者系統外最終驗收
+  def uat_accepted_on
+    in_system = sign_offs.map(&:signed_at).min&.to_date
+    [ in_system, final_external_sign_off&.signed_on ].compact.min
+  end
+
   # 唔可以開新 round 嘅原因；nil = 可以開
   def cannot_open_round_reason
     return "已經 sign-off，唔使再開 round" if signed_off?
+    return "UAT 已喺系統外簽署驗收，唔使再開 round" if accepted_externally?
     return "Round #{open_round.number} 仲未完" if open_round
     return "未有 test case" if test_cases.empty?
     return "已用晒 #{allowed_uat_rounds} 個 round，要先開 CR 並批核" if uat_rounds.size >= allowed_uat_rounds

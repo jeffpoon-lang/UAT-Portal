@@ -16,6 +16,7 @@
     <button class="btn btn-primary">睇報告</button>
     <% if @report %>
       <span data-controller="print"><button type="button" class="btn btn-secondary" data-action="print#print"><%= icon("printer") %>列印／存 PDF</button></span>
+      <%= link_to portal_report_path(client_id: @client.id, month: @month.strftime("%Y-%m")), class: "btn btn-ghost" do %><%= icon("eye") %>客戶睇到嘅版本<% end %>
     <% end %>
   <% end %>
 </div>
@@ -23,83 +24,7 @@
 <% if @report.nil? %>
   <%= empty_state("未有客戶") %>
 <% else %>
-  <article class="sheet mx-auto max-w-[210mm]">
-    <header class="border-b border-line pb-6">
-      <p class="eyebrow">Maintenance 月報</p>
-      <h1 class="mt-1.5 text-2xl font-semibold tracking-tight text-fg"><%= @client.name %> · <%= @month.strftime("%Y 年 %-m 月") %></h1>
-    </header>
-
-    <div class="grid grid-cols-3 gap-3 py-6">
-      <div class="stat shadow-none"><p class="stat-label">新開 ticket</p><p class="stat-value"><%= @report.opened.size %></p></div>
-      <div class="stat shadow-none"><p class="stat-label">已解決</p><p class="stat-value"><%= @report.resolved.size %></p></div>
-      <div class="stat shadow-none"><p class="stat-label">處理時間</p><p class="stat-value"><%= MaintenanceReport.format_minutes(@report.total_minutes) %></p></div>
-    </div>
-
-    <% if (plan = @report.plan) && plan.billable_in?(@month) %>
-      <section class="mb-8" aria-labelledby="retainer-heading">
-        <h2 id="retainer-heading" class="section-title mb-2">月費維護</h2>
-        <table class="table table-compact">
-          <tbody>
-            <tr><td>月費<% if plan.quote_ref.present? %>（<span class="font-mono"><%= plan.quote_ref %></span>）<% end %></td><td class="text-right whitespace-nowrap"><%= hkd(plan.fee_hkd(@month)) %></td></tr>
-            <tr><td>修改輪數：用咗 <%= plan.rounds_used(@month) %> 輪（包 <%= plan.included_rounds %> 輪）</td><td class="text-right text-fg-subtle">—</td></tr>
-            <tr><td>額外修改 <%= plan.extra_rounds(@month) %> 輪 × <%= hkd(plan.extra_round_hkd) %></td><td class="text-right whitespace-nowrap"><%= hkd(plan.extra_amount_hkd(@month)) %></td></tr>
-            <tr class="font-semibold"><td class="border-t-2 border-fg/20">本月應付</td><td class="border-t-2 border-fg/20 text-right whitespace-nowrap"><%= hkd(plan.amount_due_hkd(@month)) %></td></tr>
-          </tbody>
-        </table>
-        <% if plan.notice_given? %><p class="mt-2 text-xs text-fg-subtle">已通知終止，合約 <%= plan.ends_on %> 完結。</p><% end %>
-      </section>
-    <% end %>
-
-    <% update = @report.monthly_update %>
-    <% if update&.done_summary.present? || update&.next_steps.present? %>
-      <section class="mb-8 grid gap-6 sm:grid-cols-2" aria-label="本月進度更新">
-        <div><h2 class="section-title mb-1.5">本月完成</h2><p class="prose-text"><%= update.done_summary %></p></div>
-        <div><h2 class="section-title mb-1.5">下月建議</h2><p class="prose-text"><%= update.next_steps %></p></div>
-      </section>
-    <% end %>
-
-    <section class="mb-8" aria-labelledby="tickets-heading">
-      <h2 id="tickets-heading" class="section-title mb-2">本月處理嘅 ticket</h2>
-      <% if @report.minutes_by_ticket.empty? %>
-        <p class="text-sm text-fg-subtle">本月冇處理記錄。</p>
-      <% else %>
-        <table class="table table-compact">
-          <thead><tr><th>編號</th><th>內容</th><th>狀態</th><th class="text-right">時間</th></tr></thead>
-          <tbody>
-            <% @report.minutes_by_ticket.each do |ticket, minutes| %>
-              <tr>
-                <td class="font-mono text-xs whitespace-nowrap"><%= link_to ticket.doc_number, admin_ticket_path(ticket), class: "hover:text-accent" %></td>
-                <td><%= ticket.title %></td>
-                <td class="whitespace-nowrap"><%= ticket.status_label %></td>
-                <td class="text-right whitespace-nowrap"><%= MaintenanceReport.format_minutes(minutes) %></td>
-              </tr>
-            <% end %>
-          </tbody>
-        </table>
-
-        <h2 class="section-title mt-8 mb-3">處理明細</h2>
-        <ol class="space-y-3 text-sm">
-          <% @report.logs.each do |log| %>
-            <li class="border-l-2 border-line pl-3">
-              <p class="text-xs text-fg-subtle tabular"><%= log.logged_on.strftime("%m-%d") %> · <%= log.ticket.doc_number %> · <%= log.minutes %> 分鐘</p>
-              <p class="prose-text mt-0.5"><%= log.note %></p>
-            </li>
-          <% end %>
-        </ol>
-      <% end %>
-    </section>
-
-    <% if @report.still_open.any? %>
-      <section aria-labelledby="open-heading">
-        <h2 id="open-heading" class="section-title mb-2">未解決（帶去下個月）</h2>
-        <ul class="list-disc space-y-1 pl-5 text-sm">
-          <% @report.still_open.each do |t| %>
-            <li><span class="font-mono text-xs"><%= t.doc_number %></span> <%= t.title %>（<%= t.status_label %>）</li>
-          <% end %>
-        </ul>
-      </section>
-    <% end %>
-  </article>
+  <%= render "shared/maintenance_report", report: @report, audience: :admin %>
 
   <%= form_with model: (@report.monthly_update || MonthlyUpdate.new), url: admin_monthly_updates_path, method: :post, scope: :monthly_update,
         class: "card mx-auto mt-6 max-w-[210mm]", data: { print: "hide" } do |f| %>

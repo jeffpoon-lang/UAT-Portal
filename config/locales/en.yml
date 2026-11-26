@@ -29,3 +29,15 @@
 
 en:
   hello: "Hello world"
+
+  # 新功能嘅欄位名，令錯誤訊息讀得明（例如「簽署日期 唔可以留空」）
+  activerecord:
+    attributes:
+      external_sign_off:
+        title: 標題
+        signer_name: 簽署人
+        signed_on: 簽署日期
+        document: 文件
+      system_link:
+        label: 名稱
+        url: 網址

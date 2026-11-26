@@ -28,6 +28,9 @@ pages = {
     [ "projects", admin_projects_path ],
     [ "project-uat", admin_project_path(app) ],
     [ "project-open-round", admin_project_path(course) ],
+    [ "project-maintenance", admin_project_path(site) ],
+    [ "external-sign-off-new", new_admin_project_external_sign_off_path(site) ],
+    [ "system-link-new", new_admin_project_system_link_path(site) ],
     [ "round-failed", admin_project_uat_round_path(app, failed_round) ],
     [ "test-case-new", new_admin_project_test_case_path(app) ],
     [ "cr-new", new_admin_project_change_request_path(app) ],
@@ -48,6 +51,8 @@ pages = {
     [ "portal-ticket-new-extra", new_portal_project_ticket_path(site) ],
     [ "portal-ticket", portal_project_ticket_path(site, ticket) ],
     [ "portal-retainer", portal_retainer_path ],
+    [ "portal-system", portal_project_system_path(site) ],
+    [ "portal-report", portal_report_path ],
     ([ "portal-sign-off", portal_sign_off_path(sign_off) ] if sign_off)
   ].compact,
   cafe: [

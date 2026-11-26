@@ -20,7 +20,9 @@
           <%= button_to admin_project_uat_rounds_path(@project), class: "btn btn-primary btn-sm" do %><%= icon("plus") %>開 Round <%= @project.uat_rounds.size + 1 %><% end %>
         <% end %>
       </div>
-      <% if @project.uat_rounds.empty? %>
+      <% if @project.uat_rounds.empty? && @project.accepted_externally? %>
+        <%= callout(:success) do %>UAT 已於 <%= @project.uat_accepted_on.strftime("%Y-%m-%d") %> 喺系統外簽署驗收，見下面嘅簽署記錄。<% end %>
+      <% elsif @project.uat_rounds.empty? %>
         <%= empty_state("未開過 round", body: "加齊 test case 之後開 Round 1，客戶就可以喺 portal 開始測試。") %>
       <% else %>
         <div class="list">
@@ -28,6 +30,18 @@
             <%= render "shared/round_row", round: r, href: admin_project_uat_round_path(@project, r), audience: :admin %>
           <% end %>
         </div>
+      <% end %>
+    </section>
+
+    <section id="external-sign-offs" aria-labelledby="ext-heading">
+      <div class="mb-3 flex flex-wrap items-center justify-between gap-3">
+        <h2 id="ext-heading" class="section-title">系統外簽署記錄</h2>
+        <%= link_to new_admin_project_external_sign_off_path(@project), class: "btn btn-secondary btn-sm" do %><%= icon("plus") %>加簽署記錄<% end %>
+      </div>
+      <% if @project.external_sign_offs.empty? %>
+        <p class="rounded-xl border border-dashed border-line-strong px-4 py-6 text-center text-sm text-fg-subtle">UAT 喺 portal 以外簽（例如紙本或者 PDF）就喺度記錄，客戶喺 portal 都睇到。</p>
+      <% else %>
+        <%= render "shared/external_sign_offs", project: @project, sign_offs: @project.external_sign_offs, audience: :admin %>
       <% end %>
     </section>
 
@@ -47,7 +61,7 @@
                 <tr>
                   <td><span class="code-chip"><%= tc.code %></span></td>
                   <td class="min-w-48 font-medium"><%= tc.title %></td>
-                  <td class="min-w-48 text-fg-muted"><%= tc.expected %></td>
+                  <td class="min-w-48 whitespace-pre-line text-fg-muted"><%= tc.expected %></td>
                   <td><%= badge(tc.source.upcase, :neutral) %></td>
                   <td class="text-right whitespace-nowrap">
                     <%= link_to edit_admin_project_test_case_path(@project, tc), class: "btn btn-ghost btn-sm btn-icon", "aria-label": "改 #{tc.code}" do %><%= icon("pencil") %><% end %>
@@ -63,7 +77,41 @@
     </section>
   </div>
 
-  <aside aria-labelledby="change-requests">
+  <aside class="space-y-8">
+    <section id="system-links" aria-labelledby="system-heading">
+      <div class="mb-3 flex items-center justify-between gap-3">
+        <h2 id="system-heading" class="section-title">系統資料</h2>
+        <%= link_to new_admin_project_system_link_path(@project), class: "btn btn-secondary btn-sm" do %><%= icon("plus") %>加連結<% end %>
+      </div>
+      <% links = SystemLink.grouped(@project.system_links) %>
+      <% if links.empty? %>
+        <p class="rounded-xl border border-dashed border-line-strong px-4 py-6 text-center text-sm text-fg-subtle">網址、帳戶喺邊個名下、手冊位置。客戶喺 portal「系統資料」頁睇到。</p>
+      <% else %>
+        <div class="list">
+          <% links.each do |kind, group| %>
+            <p class="eyebrow bg-subtle px-4 py-1.5"><%= SystemLink::KIND_LABELS.fetch(kind) %></p>
+            <% group.each do |link| %>
+              <div class="flex items-start gap-2 px-4 py-2.5">
+                <div class="min-w-0 flex-1">
+                  <p class="truncate text-sm font-medium text-fg"><%= link.label %></p>
+                  <% if link.url %><p class="truncate font-mono text-xs text-fg-subtle"><%= link_to link.url, link.url, target: "_blank", rel: "noopener noreferrer", class: "hover:text-accent" %></p><% end %>
+                  <% if link.account_owner.present? %><p class="truncate text-xs text-fg-muted">帳戶：<%= link.account_owner %></p><% end %>
+                </div>
+                <%= link_to edit_admin_project_system_link_path(@project, link), class: "btn btn-ghost btn-sm btn-icon", "aria-label": "改「#{link.label}」" do %><%= icon("pencil") %><% end %>
+                <%= button_to admin_project_system_link_path(@project, link), method: :delete, form_class: "inline", class: "btn btn-ghost btn-sm btn-icon hover:text-red-700",
+                      "aria-label": "刪「#{link.label}」", data: { turbo_confirm: "確定刪「#{link.label}」？" } do %><%= icon("trash-2") %><% end %>
+              </div>
+            <% end %>
+          <% end %>
+        </div>
+      <% end %>
+      <p class="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-sm">
+        <%= link_to "客戶睇到嘅版本", portal_project_system_path(@project), class: "link" %>
+        <%= link_to (@project.support_notes.present? ? "改支援資料" : "加支援資料"), edit_admin_project_path(@project, anchor: "project_support_notes"), class: "link" %>
+      </p>
+    </section>
+
+    <section aria-labelledby="change-requests">
     <div class="mb-3 flex items-center justify-between gap-3">
       <h2 id="change-requests" class="section-title">Change requests</h2>
       <%= link_to new_admin_project_change_request_path(@project), class: "btn btn-secondary btn-sm" do %><%= icon("plus") %>開 CR<% end %>
@@ -90,5 +138,6 @@
         <% end %>
       </ul>
     <% end %>
+    </section>
   </aside>
 </div>
