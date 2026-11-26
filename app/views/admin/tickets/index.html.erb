@@ -9,7 +9,7 @@
 </nav>
 
 <% if @tickets.empty? %>
-  <%= empty_state("冇 ticket", icon: "life-buoy", body: "客戶喺 portal 報問題之後會喺度出現。") %>
+  <%= empty_state("冇 ticket", body: "客戶喺 portal 報問題之後會喺度出現。") %>
 <% else %>
   <div class="list">
     <% @tickets.each do |t| %>

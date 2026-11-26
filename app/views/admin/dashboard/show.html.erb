@@ -52,7 +52,7 @@
 <section aria-labelledby="projects-heading">
   <h2 id="projects-heading" class="section-title mb-3">Projects</h2>
   <% if @projects.empty? %>
-    <%= empty_state("未有 project", icon: "folder-kanban", body: "先加客戶，再開 project。") do %>
+    <%= empty_state("未有 project", body: "先加客戶，再開 project。") do %>
       <%= link_to new_admin_client_path, class: "btn btn-primary" do %><%= icon("plus") %>加客戶<% end %>
     <% end %>
   <% else %>

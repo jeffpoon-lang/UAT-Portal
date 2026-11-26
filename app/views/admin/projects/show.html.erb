@@ -21,7 +21,7 @@
         <% end %>
       </div>
       <% if @project.uat_rounds.empty? %>
-        <%= empty_state("未開過 round", icon: "file-check-2", body: "加齊 test case 之後開 Round 1，客戶就可以喺 portal 開始測試。") %>
+        <%= empty_state("未開過 round", body: "加齊 test case 之後開 Round 1，客戶就可以喺 portal 開始測試。") %>
       <% else %>
         <div class="list">
           <% @project.uat_rounds.each do |r| %>
@@ -37,7 +37,7 @@
         <%= link_to new_admin_project_test_case_path(@project), class: "btn btn-secondary btn-sm" do %><%= icon("plus") %>加 test case<% end %>
       </div>
       <% if @project.test_cases.empty? %>
-        <%= empty_state("未有 test case", icon: "file-text", body: "SOP 要求客最少交 10 條。") %>
+        <%= empty_state("未有 test case", body: "SOP 要求客最少交 10 條。") %>
       <% else %>
         <div class="table-wrap">
           <table class="table">
