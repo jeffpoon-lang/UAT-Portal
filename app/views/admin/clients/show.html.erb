@@ -8,7 +8,7 @@
   <section class="lg:col-span-3" aria-labelledby="projects-heading">
     <h2 id="projects-heading" class="section-title mb-3">Projects</h2>
     <% if @projects.empty? %>
-      <%= empty_state("未有 project", icon: "folder-kanban") do %>
+      <%= empty_state("未有 project") do %>
         <%= link_to new_admin_project_path(client_id: @client.id), class: "btn btn-secondary" do %><%= icon("plus") %>新 project<% end %>
       <% end %>
     <% else %>

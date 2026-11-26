@@ -20,7 +20,7 @@
   /* Turbo shows this bar while a slow page loads */
   .turbo-progress-bar {
     height: 2px;
-    background-color: var(--color-accent);
+    background-color: var(--color-amber);
   }
 
   /* Turbo frames are inline by default, which drops the spacing between cards */

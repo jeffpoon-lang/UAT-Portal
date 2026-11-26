@@ -82,11 +82,12 @@ module UiHelper
     end
   end
 
-  def empty_state(title, icon: "inbox", body: nil, &block)
+  # The squirrel with a magnifying glass, looking for what isn't there yet
+  def empty_state(title, body: nil, &block)
     action = capture(&block) if block
     tag.div(class: "empty") do
       safe_join([
-        tag.span(icon(icon, class: "size-5"), class: "mb-3 grid size-10 place-items-center rounded-full bg-subtle text-fg-subtle"),
+        icon("mascot-search", class: "mb-3 w-32 text-fg-muted"),
         tag.p(title, class: "text-sm font-medium text-fg"),
         (tag.p(body, class: "mt-1 max-w-sm text-sm text-fg-subtle") if body),
         (tag.div(action, class: "mt-4") if action)

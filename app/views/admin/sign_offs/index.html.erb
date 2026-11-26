@@ -3,7 +3,7 @@
 <% end %>
 
 <% if @sign_offs.empty? %>
-  <%= empty_state("未有 sign-off", icon: "file-check-2", body: "客戶喺 portal 簽署 UAT 之後，記錄會喺度出現。") %>
+  <%= empty_state("未有 sign-off", body: "客戶喺 portal 簽署 UAT 之後，記錄會喺度出現。") %>
 <% else %>
   <div class="table-wrap">
     <table class="table">

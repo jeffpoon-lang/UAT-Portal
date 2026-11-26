@@ -3,7 +3,7 @@
 <% end %>
 
 <% if @projects.empty? %>
-  <%= empty_state("未有 project", icon: "folder-kanban", body: "先加客戶，再開 project。") do %>
+  <%= empty_state("未有 project", body: "先加客戶，再開 project。") do %>
     <%= link_to new_admin_project_path, class: "btn btn-primary" do %><%= icon("plus") %>新 project<% end %>
   <% end %>
 <% else %>

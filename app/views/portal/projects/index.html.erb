@@ -2,7 +2,7 @@
 <%= page_header "我嘅 project", subtitle: (client ? "#{client.name}，你好" : nil) %>
 
 <% if @projects.empty? %>
-  <%= empty_state("暫時未有 project", icon: "folder-kanban", body: "開咗 project 之後，你可以喺度睇進度同測試。") %>
+  <%= empty_state("暫時未有 project", body: "開咗 project 之後，你可以喺度睇進度同測試。") %>
 <% else %>
   <div class="space-y-4">
     <% @projects.each do |project| %>

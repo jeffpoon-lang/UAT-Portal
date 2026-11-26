@@ -3,7 +3,7 @@
 <% end %>
 
 <% if @clients.empty? %>
-  <%= empty_state("未有客戶", icon: "users", body: "加咗客戶之後就可以開 project 同設定月費維護。") do %>
+  <%= empty_state("未有客戶", body: "加咗客戶之後就可以開 project 同設定月費維護。") do %>
     <%= link_to new_admin_client_path, class: "btn btn-primary" do %><%= icon("plus") %>新客戶<% end %>
   <% end %>
 <% else %>
