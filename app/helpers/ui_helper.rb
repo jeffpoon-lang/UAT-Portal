@@ -9,6 +9,7 @@ module UiHelper
 
   RESULT_TONES = { "pending" => :neutral, "pass" => :success, "fail" => :danger, "blocked" => :warning }.freeze
   TICKET_STATUS_TONES = { "open" => :danger, "in_progress" => :accent, "waiting_client" => :warning, "resolved" => :success }.freeze
+  IT_CHECK_TONES = { "untested" => :neutral, "pass" => :success, "fail" => :danger }.freeze
   ROUND_TONES = { "open" => :accent, "changes_requested" => :warning, "signed_off" => :success }.freeze
   CR_TONES = { "pending" => :warning, "approved" => :success, "rejected" => :neutral }.freeze
   AI_CATEGORY_TONES = { "bug" => :danger, "change_request" => :violet, "unclear" => :neutral }.freeze
@@ -24,6 +25,7 @@ module UiHelper
   end
 
   def result_badge(result) = badge(result.status_label, RESULT_TONES.fetch(result.status))
+  def it_check_badge(test_case) = badge(test_case.it_status_label, IT_CHECK_TONES.fetch(test_case.it_status))
   def round_status_badge(round, audience = :admin) = badge(round.status_label(audience), ROUND_TONES.fetch(round.status))
   def ticket_status_badge(ticket) = badge(ticket.status_label, TICKET_STATUS_TONES.fetch(ticket.status))
 

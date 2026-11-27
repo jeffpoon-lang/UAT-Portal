@@ -5,7 +5,7 @@ Sign-off 記錄用 Rust（`seal/`）計 SHA-256 hash chain，改過任何一條�
 
 ## 流程
 
-1. 你（admin）建客戶、project、test case，撳「開 Round 1」
+1. 你（admin）建客戶、project、test case，撳「開 Round 1」。交 UAT 之前可以喺每條 test case 記低「IT 測試紀錄」（通過／未過、日期、備註），或者一次過將未記錄嘅全部記做通過；客喺 portal 每條旁邊見到「IT 已測通過」，未測同未過嘅唔會顯示
 2. 客喺 portal 逐條剔 Pass／Fail／測唔到，寫 comment、上載截圖
 3. 有 fail → 客撳「提交，等 IT 修正」→ 你改好開下一個 round
 4. 超出合約 round 數 → 開 CR，客簽咗你撳批核，先開到新 round

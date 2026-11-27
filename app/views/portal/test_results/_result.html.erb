@@ -15,6 +15,7 @@
           <% if tc.expected.present? %><div><dt class="text-xs font-medium text-fg-subtle">預期結果</dt><dd class="mt-0.5 text-fg-muted"><%= tc.expected %></dd></div><% end %>
         </dl>
       <% end %>
+      <%= render "shared/it_check", test_case: tc %>
 
       <% if result.uat_round.status_open? %>
         <%= form_with model: result, url: portal_project_uat_round_test_result_path(result.uat_round.project, result.uat_round, result),

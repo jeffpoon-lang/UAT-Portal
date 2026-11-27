@@ -19,7 +19,9 @@ Rails.application.routes.draw do
     resources :monthly_updates, only: :create
     get "retention", to: "retention#show", as: :retention
     resources :projects, except: :destroy do
-      resources :test_cases, except: [ :index, :show ]
+      resources :test_cases, except: [ :index, :show ] do
+        post :mark_it_passed, on: :collection
+      end
       resources :uat_rounds, only: [ :create, :show ] do
         post :summarise, on: :member
       end

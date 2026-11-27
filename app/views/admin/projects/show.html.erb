@@ -48,8 +48,18 @@
     <section aria-labelledby="cases-heading">
       <div class="mb-3 flex flex-wrap items-center justify-between gap-3">
         <h2 id="cases-heading" class="section-title">Test cases <span class="ml-1 text-sm font-normal text-fg-subtle tabular"><%= @project.test_cases.size %> 條</span></h2>
-        <%= link_to new_admin_project_test_case_path(@project), class: "btn btn-secondary btn-sm" do %><%= icon("plus") %>加 test case<% end %>
+        <div class="flex flex-wrap items-center gap-2">
+          <% untested = @project.test_cases.count(&:it_untested?) %>
+          <% if untested.positive? %>
+            <%= button_to mark_it_passed_admin_project_test_cases_path(@project), form_class: "inline", class: "btn btn-ghost btn-sm",
+                  data: { turbo_confirm: "將未記錄嘅 #{untested} 條全部記做「IT 已測通過」（今日）？" } do %><%= icon("circle-check") %>全部記做 IT 已測通過<% end %>
+          <% end %>
+          <%= link_to new_admin_project_test_case_path(@project), class: "btn btn-secondary btn-sm" do %><%= icon("plus") %>加 test case<% end %>
+        </div>
       </div>
+      <% if @project.test_cases.any? %>
+        <p class="mb-3 text-sm text-fg-muted">IT 已測通過 <span class="tabular"><%= @project.test_cases.count(&:it_pass?) %>／<%= @project.test_cases.size %></span> 條<% failed = @project.test_cases.count(&:it_fail?) %><% if failed.positive? %>，未過 <span class="tabular"><%= failed %></span> 條<% end %>。客戶喺 portal 見到通過嗰啲。</p>
+      <% end %>
       <% if @project.test_cases.empty? %>
         <%= empty_state("未有 test case", body: "SOP 要求客最少交 10 條。") %>
       <% else %>
@@ -60,7 +70,12 @@
               <% @project.test_cases.each do |tc| %>
                 <tr>
                   <td><span class="code-chip"><%= tc.code %></span></td>
-                  <td class="min-w-48 font-medium"><%= tc.title %></td>
+                  <td class="min-w-48">
+                    <p class="font-medium"><%= tc.title %></p>
+                    <%# IT 測試結果放喺標題下面，唔另開一欄，免得張表闊到要橫向捲 %>
+                    <p class="mt-1.5 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-fg-subtle"><%= it_check_badge(tc) %><% if tc.it_checked? %><span class="tabular"><%= tc.it_tested_on %></span><% end %></p>
+                    <% if tc.it_note.present? %><p class="mt-1 text-xs whitespace-pre-line text-fg-muted"><%= tc.it_note %></p><% end %>
+                  </td>
                   <td class="min-w-48 whitespace-pre-line text-fg-muted"><%= tc.expected %></td>
                   <td><%= badge(tc.source.upcase, :neutral) %></td>
                   <td class="text-right whitespace-nowrap">

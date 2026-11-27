@@ -96,6 +96,7 @@
         <li class="px-4 py-3 sm:px-5">
           <p class="flex items-baseline gap-2"><span class="code-chip shrink-0"><%= tc.code %></span><span class="text-sm font-medium text-fg"><%= tc.title %></span></p>
           <% if tc.expected.present? %><p class="mt-1 text-sm whitespace-pre-line text-fg-muted">預期：<%= tc.expected %></p><% end %>
+          <%= render "shared/it_check", test_case: tc %>
         </li>
       <% end %>
     </ul>

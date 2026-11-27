@@ -67,6 +67,11 @@ class Project < ApplicationRecord
     end
   end
 
+  # 將未有 IT 結果嘅 test case 一次過記做已測通過；有結果嘅（包括未過）唔郁。回傳改咗幾多條。
+  def mark_untested_cases_it_passed!(on: Date.current)
+    test_cases.where(it_status: :untested).update_all(it_status: TestCase.it_statuses.fetch("pass"), it_tested_on: on, updated_at: Time.current)
+  end
+
   # 下一個 TC 編號，例如 TC-01、TC-02
   def next_test_case_code
     last = test_cases.pluck(:code).filter_map { |c| c[/\ATC-(\d+)\z/, 1]&.to_i }.max || 0

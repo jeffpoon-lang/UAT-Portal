@@ -8,6 +8,15 @@
   <%= f.field :title, "標題" do %><%= f.text_field :title %><% end %>
   <%= f.field :steps, "步驟", optional: true do %><%= f.text_area :steps, rows: 4 %><% end %>
   <%= f.field :expected, "預期結果" do %><%= f.text_area :expected, rows: 2 %><% end %>
+  <fieldset class="space-y-4 border-t border-line pt-4">
+    <legend class="section-title">IT 測試紀錄</legend>
+    <p class="hint">交 UAT 之前你自己試過嘅結果。客戶喺 portal 只會見到「IT 已測通過」嗰啲同埋備註；未測同未過嘅唔會顯示。</p>
+    <div class="grid grid-cols-2 gap-4">
+      <%= f.field :it_status, "IT 結果" do %><%= f.select :it_status, ::TestCase::IT_STATUS_LABELS.map { |k, v| [ v, k ] } %><% end %>
+      <%= f.field :it_tested_on, "測試日期", optional: true, hint: "留空就當今日" do %><%= f.date_field :it_tested_on, max: Date.current %><% end %>
+    </div>
+    <%= f.field :it_note, "IT 備註", optional: true, hint: "例如喺邊個環境試、用咩方法試" do %><%= f.text_area :it_note, rows: 2 %><% end %>
+  </fieldset>
   <div class="flex gap-2 pt-2">
     <%= f.submit "儲存" %>
     <%= link_to "取消", admin_project_path(project), class: "btn btn-ghost" %>
