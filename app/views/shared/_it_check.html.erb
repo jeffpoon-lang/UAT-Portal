@@ -1,0 +1,8 @@
+<%# 客戶睇到嘅「IT 已測通過」：只顯示通過嘅，未測同未過唔出 %>
+<%# locals: (test_case:) -%>
+<% if test_case.it_pass? %>
+  <div class="mt-2 text-xs text-fg-muted">
+    <p class="flex flex-wrap items-center gap-x-2 gap-y-1"><%= badge("IT 已測通過", :success, icon: "circle-check") %><span class="tabular"><%= test_case.it_tested_on %></span></p>
+    <% if test_case.it_note.present? %><p class="mt-1 whitespace-pre-line"><%= test_case.it_note %></p><% end %>
+  </div>
+<% end %>

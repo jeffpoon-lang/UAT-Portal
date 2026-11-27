@@ -32,6 +32,7 @@ UAT Portal replaces that with one place where:
 ## Features
 
 - **Delivery phases**: each project moves through Requirement, Design, Development, SAT, UAT, Launch and Maintenance, shown as a progress bar to both sides.
+- **IT test record**: before handing over, the developer records their own result on each test case (pass or fail, date, note), one by one or all unrecorded cases at once. The client sees "IT 已測通過" beside the cases that passed; unrecorded and failed ones stay internal. This is kept apart from the client's own results.
 - **UAT rounds**: opening a round creates a result for every test case. Failed or blocked results need a comment. The submit panel updates live through Turbo Streams as the client works.
 - **Round limits and change requests**: allowed rounds = rounds in the contract + rounds added by approved change requests (`CR-CLIENT-001`).
 - **Sealed sign-off**: when every test passes, the client signs with their full name. The results are frozen as canonical JSON, sealed by Rust and chained to the previous sign-off. The record is read-only and numbered `UAT-CLIENT-001`.

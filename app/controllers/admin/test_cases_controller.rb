@@ -25,6 +25,13 @@ class Admin::TestCasesController < Admin::BaseController
     end
   end
 
+  # 將未記錄 IT 結果嘅 test case 一次過記做「IT 已測通過」（今日）
+  def mark_it_passed
+    count = @project.mark_untested_cases_it_passed!
+    notice = count.zero? ? "冇未記錄嘅 test case，冇嘢改" : "已將 #{count} 條記做 IT 已測通過"
+    redirect_to admin_project_path(@project), notice: notice, status: :see_other
+  end
+
   def destroy
     @test_case.destroy
     redirect_to admin_project_path(@project), notice: "已刪除 #{@test_case.code}", status: :see_other
@@ -33,5 +40,5 @@ class Admin::TestCasesController < Admin::BaseController
   private
     def set_project = @project = Project.find(params[:project_id])
     def set_test_case = @test_case = @project.test_cases.find(params[:id])
-    def test_case_params = params.expect(test_case: [ :code, :title, :steps, :expected, :source ])
+    def test_case_params = params.expect(test_case: [ :code, :title, :steps, :expected, :source, :it_status, :it_tested_on, :it_note ])
 end
